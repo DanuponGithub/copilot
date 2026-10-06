@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎓 Copilot Learn and tools V3</title>
+<style>
+:root {
+  --bg: #0d1117; --bg2: #161b22; --bg3: #1c2430;
+  --card: #161b22; --border: #2b3542; --border2: #3d4a5c;
+  --text: #e6edf3; --muted: #9aa7b4; --faint: #6b7785;
+  --accent: #7ee0c3; --accent2: #8ab4ff; --ex: #f0b35e; --input: #7ee0c3;
+  --btn-bg: #212a35; --shadow: 0 8px 24px rgba(0,0,0,.35);
+  --code-bg: #10161d;
+  --header-h: 80px;
+}
+html[data-theme="light"] {
+  --bg: #f4f6f9; --bg2: #ffffff; --bg3: #eef1f5;
+  --card: #ffffff; --border: #d9e0e8; --border2: #c2cdd9;
+  --text: #1d2733; --muted: #5b6b7c; --faint: #8a97a5;
+  --accent: #0e9f7e; --accent2: #2f6fd0; --ex: #b97b1e; --input: #0e9f7e;
+  --btn-bg: #edf1f5; --shadow: 0 8px 24px rgba(30,45,70,.10);
+  --code-bg: #f7f9fb;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Sarabun", "Noto Sans Thai", "Tahoma", sans-serif;
+  line-height: 1.65; padding-bottom: 80px;
+}
+.wrap { max-width: 940px; margin: 0 auto; padding: 0 18px; }
+
+/* Header */
+header {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--bg); /* fallback สำหรับเบราว์เซอร์ที่ไม่รองรับ color-mix */
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.header-inner { display:flex; align-items:center; gap:12px; padding: 12px 0; flex-wrap: wrap; }
+.logo { font-size: 1.15rem; font-weight: 800; letter-spacing: .2px; }
+.logo span { color: var(--accent); }
+.header-spacer { flex: 1; }
+.search-box {
+  background: var(--bg2); border: 1px solid var(--border); color: var(--text);
+  border-radius: 10px; padding: 8px 14px; font-size: .9rem; width: 230px; outline: none;
+  font-family: inherit;
+}
+.search-box:focus { border-color: var(--accent); }
+.icon-btn {
+  background: var(--btn-bg); border: 1px solid var(--border); color: var(--text);
+  border-radius: 10px; padding: 8px 13px; cursor: pointer; font-size: .88rem; font-family: inherit;
+  transition: border-color .15s, transform .1s;
+}
+.icon-btn:hover { border-color: var(--accent); }
+.icon-btn:active { transform: scale(.96); }
+
+/* Hero */
+.hero { padding: 42px 0 10px; }
+.hero h1 { font-size: clamp(1.6rem, 4.5vw, 2.4rem); font-weight: 800; line-height: 1.3; }
+.hero h1 .hl { color: var(--accent); }
+.hero p { color: var(--muted); margin-top: 10px; max-width: 640px; }
+.hero-steps { display:flex; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
+.step {
+  flex: 1; min-width: 200px; background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 14px 16px; box-shadow: var(--shadow);
+}
+.step b { color: var(--accent2); display:block; margin-bottom: 4px; }
+.step small { color: var(--muted); }
+
+/* Legend */
+.legend {
+  margin-top: 22px; background: var(--bg3); border: 1px dashed var(--border2);
+  border-radius: 12px; padding: 14px 18px; color: var(--muted); font-size: .92rem;
+}
+.legend b { color: var(--text); }
+
+/* Chips */
+.chips { display:flex; flex-wrap: wrap; gap: 8px; margin: 26px 0 8px; }
+.chip {
+  text-decoration: none; color: var(--text); background: var(--card);
+  border: 1px solid var(--border); border-radius: 999px; padding: 6px 14px;
+  font-size: .85rem; transition: border-color .15s, background .15s;
+}
+.chip:hover { border-color: var(--accent); background: var(--bg3); }
+
+/* Cards */
+.card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+  margin-top: 14px; overflow: hidden; box-shadow: var(--shadow);
+  scroll-margin-top: calc(var(--header-h) + 12px);
+}
+.card[open] { border-color: var(--border2); }
+.card summary {
+  list-style: none; cursor: pointer; display: flex; align-items: center; gap: 14px;
+  padding: 18px 20px; user-select: none;
+}
+.card summary::-webkit-details-marker { display: none; }
+.card summary:hover { background: var(--bg3); }
+.num {
+  font-weight: 800; color: var(--faint); font-size: .95rem; min-width: 28px;
+  font-variant-numeric: tabular-nums;
+}
+.emoji { font-size: 1.5rem; }
+.sum-text { flex: 1; }
+.sum-title { display: block; font-weight: 700; font-size: 1.08rem; }
+.sum-sub { display: block; color: var(--muted); font-size: .87rem; margin-top: 2px; }
+.chev { color: var(--faint); transition: transform .2s; }
+.card[open] .chev { transform: rotate(180deg); }
+
+.card-body { padding: 4px 20px 22px; border-top: 1px solid var(--border); }
+
+.howto { background: var(--bg3); border-radius: 12px; padding: 14px 18px; margin-top: 16px; }
+.howto-title { font-weight: 700; margin-bottom: 6px; font-size: .95rem; }
+.howto ul { margin-left: 20px; color: var(--muted); font-size: .9rem; }
+.howto li { margin: 3px 0; }
+
+.block-label { font-weight: 700; font-size: .92rem; margin: 20px 0 8px; }
+.ex-label { color: var(--ex); }
+.ex-label span { color: var(--faint); font-weight: 400; font-size: .8rem; }
+.in-label { color: var(--input); }
+
+pre {
+  font-family: "Sarabun", "Noto Sans Thai", "Segoe UI", Tahoma, sans-serif;
+  white-space: pre-wrap; word-wrap: break-word;
+  border-radius: 12px; padding: 16px 18px; font-size: .9rem; line-height: 1.7;
+}
+.ex-pre {
+  background: var(--code-bg); border: 1px dashed var(--border2); color: var(--muted); /* fallback */
+  background: color-mix(in srgb, var(--ex) 8%, var(--code-bg));
+  border: 1px dashed color-mix(in srgb, var(--ex) 45%, var(--border));
+}
+.tpl-pre { background: var(--code-bg); border: 1px solid var(--border2); color: var(--text); }
+
+.tpl-block { position: relative; }
+.copy-btn {
+  position: absolute; top: -6px; right: 0;
+  background: var(--btn-bg); border: 1px solid var(--border); color: var(--text);
+  border-radius: 9px; padding: 6px 13px; cursor: pointer; font-size: .83rem; font-family: inherit;
+  transition: all .15s;
+}
+.copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+.copy-btn.copied { background: var(--accent); border-color: var(--accent); color: #06281f; font-weight: 700; }
+
+/* Guide */
+.guide { margin-top: 46px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: var(--shadow); scroll-margin-top: calc(var(--header-h) + 12px); }
+.guide h2 { font-size: 1.25rem; margin-bottom: 4px; }
+.guide > p { color: var(--muted); font-size: .9rem; margin-bottom: 16px; }
+.g-row {
+  display: grid; grid-template-columns: 1fr 26px auto; gap: 10px; align-items: center;
+  padding: 10px 8px; border-bottom: 1px solid var(--border);
+  text-decoration: none; color: inherit; border-radius: 8px;
+  transition: background .15s;
+}
+.g-row:last-child { border-bottom: none; }
+.g-row:hover { background: var(--bg3); }
+.g-need { color: var(--muted); font-size: .93rem; }
+.g-arrow { color: var(--faint); text-align: center; }
+.g-tpl { font-weight: 700; color: var(--accent2); white-space: nowrap; font-size: .93rem; }
+
+footer { text-align: center; color: var(--faint); font-size: .82rem; margin-top: 40px; }
+.hidden { display: none !important; }
+.no-result { text-align:center; color: var(--faint); padding: 30px 0; display:none; }
+
+@media (max-width: 560px) {
+  .g-row { grid-template-columns: 1fr; gap: 2px; }
+  .g-arrow { display:none; }
+  .search-box { width: 100%; order: 5; }
+  :root { --header-h: 140px; } /* ค่าสำรองบนมือถือ — JS จะวัดความสูงจริงทับอีกที */
+}
+
+/* ===== V2 ===== */
+.logo .v2tag{font-size:.65rem;background:var(--accent);color:#04201a;border-radius:6px;padding:1px 6px;margin-left:4px;vertical-align:middle;font-weight:800}
+.form{display:grid;gap:12px;margin-top:10px}
+.fld label{display:block;font-size:.88rem;font-weight:700;margin-bottom:4px}
+.fld input,.fld textarea,.fld select{width:100%;background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:9px 12px;font-family:inherit;font-size:1rem;line-height:1.5;outline:none}
+.fld textarea{resize:vertical;min-height:46px}
+.fld input:focus,.fld textarea:focus,.fld select:focus{border-color:var(--accent)}
+.fld.need input,.fld.need textarea,.fld.need select{border-color:var(--ex)}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;align-items:center}
+.btn-main{background:var(--accent);color:#04201a;border:1px solid var(--accent);border-radius:10px;padding:9px 16px;font-family:inherit;font-size:.92rem;font-weight:700;cursor:pointer}
+.btn-main.copied{background:var(--accent2);border-color:var(--accent2)}
+.btn-sub{background:var(--btn-bg);color:var(--muted);border:1px solid var(--border);border-radius:10px;padding:9px 13px;font-family:inherit;font-size:.85rem;cursor:pointer}
+.btn-sub:hover{border-color:var(--accent);color:var(--text)}
+.warn{display:none;margin-top:12px;background:var(--bg3);border:1px solid var(--ex);border-radius:12px;padding:12px 14px;font-size:.9rem;color:var(--text)}
+.warn.show{display:block}
+.warn .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.prev{margin-top:14px}
+.prev summary{cursor:pointer;color:var(--muted);font-size:.88rem;font-weight:700;padding:4px 0}
+.prev pre{margin-top:8px}
+.profile{margin-top:20px;background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow)}
+.profile summary{cursor:pointer;padding:14px 18px;list-style:none;font-size:.95rem}
+.profile summary::-webkit-details-marker{display:none}
+.profile summary span{color:var(--muted);font-size:.84rem}
+.pf-body{padding:2px 18px 18px;border-top:1px solid var(--border)}
+.pf-on{display:flex;gap:8px;align-items:center;margin-top:14px;font-size:.9rem}
+.pf-note{color:var(--faint);font-size:.8rem;margin:8px 0 12px}
+
+/* ===== V3 ===== */
+.tabs{display:flex;gap:8px;padding-bottom:10px}
+.tab{background:var(--btn-bg);color:var(--muted);border:1px solid var(--border);border-radius:10px;padding:8px 16px;font-family:inherit;font-size:.92rem;font-weight:700;cursor:pointer}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#04201a}
+.l-hero{padding:34px 0 6px}
+.l-hero h1{font-size:clamp(1.5rem,4.2vw,2.2rem);font-weight:800;line-height:1.3}
+.l-hero h1 .hl{color:var(--accent)}
+.l-hero p{color:var(--muted);margin-top:8px;max-width:640px}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 4px}
+.pill{background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:999px;padding:6px 16px;font-family:inherit;font-size:.9rem;cursor:pointer}
+.pill.on{border-color:var(--accent);color:var(--accent);font-weight:700}
+.pill small{color:var(--faint);margin-left:4px}
+.mod{margin:28px 0 0;font-size:1.02rem;color:var(--accent2)}
+.sl{background:var(--card);border:1px solid var(--border);border-radius:14px;margin-top:10px;overflow:hidden;box-shadow:var(--shadow);scroll-margin-top:calc(var(--header-h) + 12px)}
+.sl summary{list-style:none;cursor:pointer;display:flex;gap:12px;align-items:center;padding:14px 18px}
+.sl summary::-webkit-details-marker{display:none}
+.sl summary:hover{background:var(--bg3)}
+.sl[open] .chev{transform:rotate(180deg)}
+.sl-t{flex:1;font-weight:700}
+.sl-body{padding:6px 20px 18px;border-top:1px solid var(--border);overflow-x:auto}
+.sl-body ul,.sl-body ol{margin:8px 0 8px 22px;color:var(--muted)}
+.sl-body li{margin:3px 0}
+.sl-body p{margin:8px 0}
+.sl-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:.9rem}
+.sl-body th,.sl-body td{border:1px solid var(--border);padding:8px 10px;text-align:left;vertical-align:top}
+.sl-body th{background:var(--bg3)}
+.sl-body pre.pr{margin:10px 0 6px;background:var(--code-bg);border:1px solid var(--border2);color:var(--text)}
+.goal{background:var(--bg3);border-left:3px solid var(--accent);padding:10px 14px;border-radius:8px;margin-top:12px}
+.tn{background:var(--bg3);border:1px dashed var(--ex);border-radius:10px;padding:10px 14px;margin-top:14px;font-size:.86rem;color:var(--muted)}
+.tn b{color:var(--ex)}
+.soon{margin-top:20px;padding:26px;border:1px dashed var(--border2);border-radius:14px;color:var(--muted);text-align:center}
+.l-foot{color:var(--faint);font-size:.8rem;margin-top:30px}
+.pm{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;flex-direction:column}
+.pm-top,.pm-bot{display:flex;align-items:center;gap:10px;padding:10px 18px}
+.pm-top{border-bottom:1px solid var(--border)}
+.pm-bot{border-top:1px solid var(--border);justify-content:center}
+.pm-t{flex:1;font-size:clamp(1.15rem,3vw,2rem);font-weight:800}
+.pm-b{flex:1;overflow:auto;padding:20px clamp(18px,6vw,80px);font-size:clamp(1.05rem,2.4vw,1.6rem);line-height:1.6}
+.pm-b .sl-body{border:none;padding:0}
+.pm-b pre{font-size:.78em}
+.byline{margin-left:auto;align-self:center;color:var(--faint);font-size:.78rem;text-align:right}
+.author{text-align:center;color:var(--muted);font-size:.88rem;margin-top:36px;padding-top:18px;border-top:1px solid var(--border)}
+.author b{color:var(--text)}
+@media (max-width:560px){.byline{display:none}}
+</style>
+</head>
+<body>
+
+<header id="siteHeader">
+  <div class="wrap header-inner">
+    <div class="logo">🎓 Copilot Learn <span>and tools</span> <span class="v2tag">V3</span></div>
+    <div class="header-spacer"></div>
+    <input class="search-box" id="search" type="text" placeholder="🔎 ค้นหา template...">
+    <button class="icon-btn" id="expandAll">เปิดทั้งหมด</button>
+    <button class="icon-btn" id="collapseAll">ปิดทั้งหมด</button>
+    <button class="icon-btn" id="themeBtn" title="สลับธีม">☀️</button>
+  </div>
+<div class="wrap tabs"><button class="tab" data-tab="learn" type="button">📘 เรียน Copilot</button><button class="tab" data-tab="tpl" type="button">🧰 Prompt Templates</button><span class="byline">โดย Danupon Boonthanawatthana (Ben) · Sales Performance Manager</span></div>
+</header>
+
+<main class="wrap">
+<section id="sec-learn">
+  <div class="l-hero">
+    <h1>เรียนรู้ <span class="hl">Microsoft 365 Copilot</span> ทีละระดับ</h1>
+    <p>เนื้อหาสำหรับบรรยาย กดแผ่นเพื่ออ่าน หรือกด ▶ โหมดบรรยายเพื่อขึ้นจอ (ปุ่ม ← → เปลี่ยนแผ่น, Esc ออก)</p>
+    <div class="pills" id="lvPills"></div>
+    <div class="toolbar"><button class="btn-main" id="pmStart" type="button">▶ โหมดบรรยาย</button><button class="btn-sub" id="slAll" type="button">เปิดทั้งหมด</button><button class="btn-sub" id="slNone" type="button">ปิดทั้งหมด</button></div>
+  </div>
+  <div id="lvBody"></div>
+  <p class="l-foot">ตรวจข้อมูลกับเอกสาร Microsoft ณ ตุลาคม 2026 — ฟีเจอร์และสิทธิ์ของ Copilot เปลี่ยนบ่อยและขึ้นกับนโยบายของแต่ละองค์กร ควรทดสอบในบัญชีจริงก่อนสอน</p>
+</section>
+<div id="sec-tpl">
+
+  <section class="hero">
+    <h1>ใช้ AI ให้เก่ง<br><span class="hl">โดยไม่ต้องเรียน Prompt Engineering</span></h1>
+    <p>12 เทมเพลต ออกแบบมาให้คนทั่วไปใช้ได้ทันที — เลือกเทมเพลต กรอกข้อมูลในช่อง แล้วคัดลอก Prompt ที่ประกอบเสร็จไปวางใน AI ที่คุณใช้</p>
+    <div class="hero-steps">
+      <div class="step"><b>1. เลือก & กรอก</b><small>เปิดเทมเพลตที่ต้องการ แล้วพิมพ์ข้อมูลลงในช่อง</small></div>
+      <div class="step"><b>2. คัดลอก & วางใน AI</b><small>กด "📋 คัดลอก Prompt" แล้ววางใน ChatGPT, Claude, Gemini ฯลฯ</small></div>
+      <div class="step"><b>3. ไม่ต้องแก้ซ้ำ</b><small>ระบบเตือนถ้ายังมีช่องว่าง และจำข้อมูลของคุณไว้ใช้ครั้งต่อไป</small></div>
+    </div>
+    <div class="legend">
+      <b>สัญลักษณ์ในเทมเพลต:</b> <b>ช่องกรอก</b> คือที่ให้พิมพ์ข้อมูลของคุณ (คำใบ้อยู่ในช่อง ช่องไหนไม่ใช้เว้นว่างได้) • <b style="color: var(--ex);">💡 ตัวอย่าง</b> คือตัวอย่างที่กรอกเสร็จแล้ว ดูเพื่อเข้าใจ ไม่ใช่ช่องให้กรอก • <b style="color: var(--input);">✏️ กรอกข้อมูลของคุณ</b> คือฟอร์มที่กรอกแล้วกดคัดลอก • ทุกเทมเพลตมี <b>คำสั่งสุดท้าย</b> ท้ายชุด เพื่อให้ AI รู้ว่าต้องทำอะไรกับข้อมูลของคุณ
+    </div>
+  </section>
+
+  <nav class="chips"><a class="chip" href="#tpl-1"><span>📝</span> งานทั่วไป</a>
+<a class="chip" href="#tpl-2"><span>🎨</span> สร้างภาพ</a>
+<a class="chip" href="#tpl-2b"><span>🖼️</span> ภาพ Anime</a>
+<a class="chip" href="#tpl-3"><span>🔍</span> ค้นหาข้อมูล (Research)</a>
+<a class="chip" href="#tpl-4"><span>📊</span> วิเคราะห์ข้อมูล</a>
+<a class="chip" href="#tpl-5"><span>💻</span> เขียนโปรแกรม</a>
+<a class="chip" href="#tpl-6"><span>🐞</span> แก้ปัญหา (Debugging)</a>
+<a class="chip" href="#tpl-7"><span>🧠</span> ช่วยคิดตัดสินใจ</a>
+<a class="chip" href="#tpl-8"><span>📚</span> เรียนรู้/ติวเตอร์</a>
+<a class="chip" href="#tpl-9"><span>🧑‍💼</span> บทบาท/จำลองสถานการณ์</a>
+<a class="chip" href="#tpl-10"><span>🔄</span> ทำงานหลายขั้นตอน (Workflow)</a>
+<a class="chip" href="#tpl-11"><span>🎵</span> แต่งเพลง</a></nav>
+  <div class="no-result" id="noResult">ไม่พบเทมเพลตที่ค้นหา 🙈</div>
+
+
+<details class="card" id="tpl-1" data-search="งานทั่วไป เขียน สรุป อธิบาย แปล ปรับข้อความ จัดระเบียบข้อมูล — template พื้นฐานที่ใช้ได้กับทุกงาน เหมาะกับผู้เริ่มต้น">
+  <summary>
+    <span class="num">01</span>
+    <span class="emoji">📝</span>
+    <span class="sum-text">
+      <span class="sum-title">งานทั่วไป</span>
+      <span class="sum-sub">เขียน สรุป อธิบาย แปล ปรับข้อความ จัดระเบียบข้อมูล — template พื้นฐานที่ใช้ได้กับทุกงาน เหมาะกับผู้เริ่มต้น</span>
+    </span>
+    <span class="chev">▾</span>
+  </summary>
+  <div class="card-body">
+    <div class="howto">
+      <div class="howto-title">🧭 วิธีใช้</div>
+      <ul><li>กรอกข้อมูลของคุณในแต่ละช่อง (คำใบ้อยู่ในช่อง)</li><li>ช่องไหนไม่เกี่ยวข้อง ลบทิ้งหรือเว้นว่างได้เลย ไม่จำเป็นต้องกรอกครบทุกช่อง</li><li>เลือกสไตล์/รูปแบบคำตอบตามเลข หรือเขียนเองก็ได้</li></ul>
+    </div>
+    <div class="example-block">
+      <div class="block-label ex-label">💡 ตัวอย่าง <span>(เพื่อการเรียนรู้เท่านั้น — ไม่ใช่ช่องให้กรอก)</span></div>
+      <pre class="ex-pre">🎯 เป้าหมาย: สรุปบทความด้านล่างเป็น 5 ข้อสำคัญ
+🌍 บริบท: ฉันจะนำไปนำเสนอในการประชุมทีมวันจันทร์ ผู้ฟังไม่มีพื้นฐานเรื่องนี้มาก่อน
+⚠️ เงื่อนไข: ไม่เกิน 1 หน้า A4 ใช้ภาษาไทยล้วน ไม่ต้องใส่คำศัพท์เทคนิค
+📦 ผลลัพธ์: หัวข้อย่อยพร้อมคำอธิบายสั้น ๆ แต่ละข้อ
+
+สไตล์การตอบ: 1. กระชับ
+รูปแบบคำตอบ: 2. หัวข้อย่อย</pre>
+    </div>
+    <div class="tpl-block">
+      <div class="block-label in-label">✏️ TEMPLATE สำหรับคัดลอก</div>
+      <button class="copy-btn" data-target="pre-1">📋 คัดลอก Template</button>
+      <pre class="tpl-pre" id="pre-1">📝 TEMPLATE: งานทั่วไป
+
+📌 วิธีใช้: แทนที่ข้อความใน [ ] ด้วยข้อมูลของคุณ • ช่องไหนไม่เกี่ยวข้องลบทิ้งหรือเว้นว่างได้ • ไม่จำเป็นต้องกรอกครบทุกช่อง
+
+🎯 เป้าหมาย: [ต้องการให้ AI ทำอะไร เช่น เขียน / สรุป / อธิบาย / แปล / ปรับข้อความ / จัดระเบียบข้อมูล]
+
+🌍 บริบท: [ข้อมูลที่ AI ควรรู้ เช่น เนื้อหาต้นฉบับ เรื่องที่เกี่ยวข้อง ผู้อ่านคือใคร ใช้เพื่ออะไร]
+
+⚠️ เงื่อนไข: [ข้อจำกัด เช่น ความยาว ภาษา โทน สิ่งที่ไม่ต้องการ]
+
+📦 ผลลัพธ์: [อยากได้คำตอบออกมาเป็นแบบไหน เช่น หัวข้อย่อย ตาราง รายการขั้นตอน]
+
+สไตล์การตอบ: [เลือก 1 ข้อ]
+1. กระชับ  2. ละเอียด  3. เป็นกันเอง  4. มืออาชีพ  5. เข้าใจง่าย  6. วิเคราะห์เชิงลึก  7. ให้ AI เลือกให้
+
+รูปแบบคำตอบ: [เลือก 1 ข้อ]
+1. ย่อหน้า  2. หัวข้อย่อย  3. รายการตัวเลข  4. ตาราง  5. ลำดับขั้นตอน  6. สรุปก่อนแล้วอธิบาย  7. ให้ AI เลือกให้
+
+—— คำสั่งสุดท้าย ——
+ทำงานตามเป้าหมายด้วยข้อมูลทั้งหมดข้างต้น เคารพเงื่อนไขทุกข้อ ถ้าช่องไหนว่าง ให้ใช้ค่าที่เหมาะสมเองเฉพาะกรณีที่ปลอดภัย ถ้าขาดข้อมูลสำคัญจนเริ่มงานไม่ได้ ให้ถามกลับมาก่อน อย่าแต่งข้อเท็จจริงขึ้นมาเอง</pre>
+    </div>
+  </div>
+</details>
+
+<details class="card" id="tpl-2" data-search="สร้างภาพ ภาพประกอบ โปสเตอร์ ปกหนังสือ ภาพโฆษณา เมนูอาหาร ภาพโซเชียล — บอก ai ว่าอยากได้ภาพแบบไหน">
+  <summary>
+    <span class="num">02</span>
+    <span class="emoji">🎨</span>
+    <span class="sum-text">
+      <span class="sum-title">สร้างภาพ</span>
+      <span class="sum-sub">ภาพประกอบ โปสเตอร์ ปกหนังสือ ภาพโฆษณา เมนูอาหาร ภาพโซเชียล — บอก AI ว่าอยากได้ภาพแบบไหน</span>
+    </span>
+    <span class="chev">▾</span>
+  </summary>
+  <div class="card-body">
+    <div class="howto">
+      <div class="howto-title">🧭 วิธีใช้</div>
+      <ul><li>กรอกเฉพาะสิ่งที่คุณคิดในใจ ไม่ต้องกรอกครบทุกช่อง</li><li>ยิ่งบอกรายละเอียดแสง สี อารมณ์ มากเท่าไร ภาพยิ่งใกล้เคียงที่สุด</li><li>ช่อง &#x27;สิ่งที่สำคัญที่สุด&#x27; ช่วยให้ AI จัดลำดับความสำคัญถูกต้อง</li></ul>
+    </div>
+    <div class="example-block">
+      <div class="block-label ex-label">💡 ตัวอย่าง <span>(เพื่อการเรียนรู้เท่านั้น — ไม่ใช่ช่องให้กรอก)</span></div>
+      <pre class="ex-pre">🎯 เป้าหมาย: ภาพโปสเตอร์โปรโมตคาเฟ่เปิดใหม่
+🖼️ สิ่งที่อยากให้มีในภาพ: บาริสต้าหญิงกำลังเทลาเทศกราฟฟ์ มีแมวส้มนั่งดูอยู่ข้างเคาเตอร์
+🏞️ ฉาก/บรรยากาศ: คาเฟ่ไม้อบอุ่น หน้าต่างบานใหญ่ แสงเช้าส่องเข้ามา
+💡 แสง: แสงธรรมชาติช่วงเช้า นุ่มนวล
+😊 อารมณ์: อบอุ่น ผ่อนคลาย เป็นกันเอง
+🎭 สไตล์ภาพ: ภาพประกอบน่ารัก สีน้ำ
+🌈 สี: โทนน้ำตาล ครีม เหลืองอ่อน
+🖊️ ข้อความในภาพ: &#x27;Morning Brew Café — เปิดแล้ววันนี้&#x27;
+📐 ขนาด: สี่เหลี่ยมจัตุรัส (สำหรับโพสต์ Instagram)
+⭐ สิ่งที่สำคัญที่สุด: อารมณ์อบอุ่นและแมวส้ม</pre>
+    </div>
+    <div class="tpl-block">
+      <div class="block-label in-label">✏️ TEMPLATE สำหรับคัดลอก</div>
+      <button class="copy-btn" data-target="pre-2">📋 คัดลอก Template</button>
+      <pre class="tpl-pre" id="pre-2">🎨 TEMPLATE: สร้างภาพ
+
+📌 วิธีใช้: แทนที่ข้อความใน [ ] ด้วยข้อมูลของคุณ • กรอกเฉพาะสิ่งที่คิดในใจ ไม่ต้องกรอกครบ • ช่องไหนไม่แน่ใจลบทิ้งได้
+
+🎯 เป้าหมาย: [อยากได้ภาพแบบไหน เช่น โปสเตอร์ / ภาพประกอบ / ปกหนังสือ / ภาพโฆษณา / เมนูอาหาร]
+
+🖼️ สิ่งที่อยากให้มีในภาพ: [ใคร อะไร ทำอะไร อยู่ตรงไหน]
+
+🏞️ ฉาก/บรรยากาศ: [ที่เกิดเหตุ สถานที่ สภาพแวดล้อม]
+
+👤 รายละเอียดตัวละคร/วัตถุ: [หน้าตา เสื้อผ้า อายุ ท่าทาง รายละเอียดสำคัญ]
+
+🧭 มุมมอง/องค์ประกอบภาพ: [มุมกล้อง เช่น มุมสูง มุมต่ำ ใกล้ ไกล / วัตถุอยู่ตำแหน่งไหน]
+
+💡 แสง: [แสงแบบไหน เช่น แสงเช้า แสงเย็น แสงนีออน แสงนุ่ม]
+
+😊 อารมณ์/ความรู้สึก: [ภาพควรรู้สึกยังไง เช่น อบอุ่น ตื่นเต้น หรูหรา สนุก]
+
+🎭 สไตล์ภาพ: [เช่น ภาพถ่ายจริง การ์ตูน สีน้ำ มินิมอล วินเทจ 3D]
+
+🌈 สี/โทนภาพ: [โทนสีที่ต้องการ]
+
+🖊️ ข้อความในภาพ: [ถ้ามี ให้ระบุข้อความและตำแหน่ง ถ้าไม่มีให้เขียน &#x27;ไม่มี&#x27;]
+
+📐 ขนาด/สัดส่วน: [เช่น สี่เหลี่ยมจัตุรัส แนวนอน แนวตั้ง ขนาด A4]
+
+🚫 สิ่งที่ไม่ต้องการในภาพ: [สิ่งที่ห้ามมี เช่น ไม่เอาข้อความ ไม่เอาคนเยอะ]
+
+⭐ สิ่งที่สำคัญที่สุด: [ถ้าต้องเลือก อยากให้สิ่งไหนดีที่สุด]
+
+—— คำสั่งสุดท้าย ——
+นำข้อมูลทั้งหมดมาสร้างภาพตามเป้าหมาย จัดลำดับความสำคัญจากช่อง &#x27;สิ่งที่สำคัญที่สุด&#x27; ก่อน ตามด้วยสิ่งที่อยากให้มีในภาพ สไตล์ แสง สี และรายละเอียดอื่น ๆ ระบุสิ่งที่ไม่ต้องการไว้ชัดเจน ถ้าข้อมูลขาด ให้ตัดสินใจสิ่งที่เหมาะสมเองโดยไม่ทำให้ภาพเสีย</pre>
+    </div>
+  </div>
+</details>
+
+<details class="card" id="tpl-2b" data-search="สร้างภาพ anime อนิเมะ การ์ตูนญี่ปุ่น ภาพประกอบ midjourney prompt ภาพ — prompt ภาพอนิเมะแบบมีโครงสร้าง" data-join="1">
+  <summary>
+    <span class="num">02B</span>
+    <span class="emoji">🖼️</span>
+    <span class="sum-text">
+      <span class="sum-title">สร้างภาพ แนว Anime</span>
+      <span class="sum-sub">Prompt ภาพอนิเมะแบบมีโครงสร้าง STYLE → SUBJECT → LIGHTING → ... ต่อเป็นบรรทัดเดียวให้อัตโนมัติ พร้อมวางในโปรแกรมสร้างภาพ</span>
+    </span>
+    <span class="chev">▾</span>
+  </summary>
+  <div class="card-body">
+    <div class="howto">
+      <div class="howto-title">🧭 วิธีใช้</div>
+      <ul><li>กรอกแค่ตัวหลัก ท่าทาง และฉาก ที่เหลือมีค่าเริ่มต้นหรือคำใบ้ให้</li><li>เลือกสไตล์อนิเมะได้ 4 แบบ และเลือกสัดส่วนภาพจากเมนู</li><li>ผลลัพธ์เป็น Prompt บรรทัดเดียว ไม่มีข้อความภาษาไทยปนไปด้วย กดคัดลอกแล้ววางได้เลย</li></ul>
+    </div>
+    <div class="example-block">
+      <div class="block-label ex-label">💡 ตัวอย่าง <span>(เพื่อการเรียนรู้เท่านั้น — ไม่ใช่ช่องให้กรอก)</span></div>
+      <pre class="ex-pre">🎭 STYLE: Japanese cinematic anime, polished modern anime aesthetic, hand-drawn anime feel
+👤 SUBJECT: a girl relaxing on a balcony deck chair
+🧍 ACTION / POSE: with a manga covering her face
+🏞️ ENVIRONMENT: peaceful summer balcony, sparkling swimming pool, blue morning glory flowers, playful yellow rubber ducks
+☁️ SKY / WEATHER: clear vivid blue sky with fluffy white clouds
+💡 LIGHTING: warm golden morning sunlight, luminous sky, soft atmospheric lighting, subtle lens flare
+🌈 COLOR: natural colors, gentle shadows, bright and refreshing summer tones
+😊 MOOD: peaceful, emotional, nostalgic, dreamy
+🎬 COMPOSITION: cinematic composition, highly detailed environmental background
+🔍 DETAIL LEVEL: high detail, beautiful environmental details
+📐 ASPECT RATIO: --ar 9:16
+
+➜ Prompt ที่ได้ (บรรทัดเดียว พร้อมวาง):
+Japanese cinematic anime, polished modern anime aesthetic, hand-drawn anime feel, a girl relaxing on a balcony deck chair, with a manga covering her face, peaceful summer balcony, sparkling swimming pool, blue morning glory flowers, playful yellow rubber ducks, clear vivid blue sky with fluffy white clouds, warm golden morning sunlight, luminous sky, soft atmospheric lighting, subtle lens flare, natural colors, gentle shadows, bright and refreshing summer tones, peaceful, emotional, nostalgic, dreamy, cinematic composition, highly detailed environmental background, high detail, beautiful environmental details --ar 9:16</pre>
+    </div>
+    <div class="tpl-block">
+      <div class="block-label in-label">✏️ TEMPLATE สำหรับคัดลอก</div>
+      <button class="copy-btn" data-target="pre-2b">📋 คัดลอก Template</button>
+      <pre class="tpl-pre" id="pre-2b">🖼️ TEMPLATE: สร้างภาพ แนว Anime
+
+📌 วิธีใช้: กรอกช่องที่ต้องการ • ช่องที่มีค่าเริ่มต้น (สไตล์ องค์ประกอบ ความละเอียด สัดส่วน) แก้ได้ • ระบบต่อทุกช่องเป็น Prompt บรรทัดเดียวให้เอง • โปรแกรมสร้างภาพส่วนใหญ่เข้าใจภาษาอังกฤษดีที่สุด
+
+🎭 STYLE · สไตล์ภาพ: [=1]
+1. Japanese cinematic anime, polished modern anime aesthetic, hand-drawn anime feel  2. Soft pastel anime illustration, delicate linework, gentle watercolor shading  3. Retro 90s anime, cel-shaded, film grain, nostalgic hand-painted backgrounds  4. Dark moody anime, dramatic contrast, cinematic atmosphere
+
+👤 SUBJECT · ตัวหลักของภาพ: [ใครหรืออะไร เช่น a girl relaxing on a balcony deck chair]
+
+🧍 ACTION / POSE · ท่าทาง: [ทำอะไรอยู่ เช่น with a manga covering her face]
+
+🏞️ ENVIRONMENT · ฉาก: [สถานที่และของประกอบ เช่น peaceful summer balcony, sparkling swimming pool]
+
+☁️ SKY / WEATHER · ท้องฟ้า/อากาศ: [เช่น clear vivid blue sky with fluffy white clouds]
+
+💡 LIGHTING · แสง: [เช่น warm golden morning sunlight, soft atmospheric lighting]
+
+🌈 COLOR · สี: [เช่น natural colors, gentle shadows, bright and refreshing summer tones]
+
+😊 MOOD · อารมณ์: [เช่น peaceful, emotional, nostalgic, dreamy]
+
+🎬 COMPOSITION · องค์ประกอบภาพ: [=cinematic composition, highly detailed environmental background]
+
+🔍 DETAIL LEVEL · ความละเอียด: [=high detail, beautiful environmental details]
+
+📐 ASPECT RATIO · สัดส่วนภาพ: [=1]
+1. --ar 9:16  2. --ar 16:9  3. --ar 1:1  4. --ar 3:4  5. --ar 4:5
+
+—— รูปแบบ Prompt สุดท้าย ——
+[STYLE], [SUBJECT], [ACTION / POSE], [ENVIRONMENT], [SKY / WEATHER], [LIGHTING], [COLOR], [MOOD], [COMPOSITION], [DETAIL LEVEL] [ASPECT RATIO]</pre>
+    </div>
+  </div>
+</details>
+
+<details class="card" id="tpl-3" data-search="ค้นหาข้อมูล (research) ค้นหาความรู้เรื่องใดก็ได้อย่างเป็นระบบ ได้คำตอบที่แยกชัดว่าอะไรเป็นข้อเท็จจริง อะไรเป็นความเห็น อะไรยังไม่แน่นอน">
+  <summary>
+    <span class="num">03</span>
+    <span class="emoji">🔍</span>
+    <span class="sum-text">
+      <span class="sum-title">ค้นหาข้อมูล (Research)</span>
+      <span class="sum-sub">ค้นหาความรู้เรื่องใดก็ได้อย่างเป็นระบบ ได้คำตอบที่แยกชัดว่าอะไรเป็นข้อเท็จจริง อะไรเป็นความเห็น อะไรยังไม่แน่นอน</span>
+    </span>
+    <span class="chev">▾</span>
+  </summary>
+  <div class="card-body">
+    <div class="howto">
+      <div class="howto-title">🧭 วิธีใช้</div>
+      <ul><li>เขียนคำถามหลักให้ชัดที่สุดเท่าที่จะทำได้</li><li>ระบุแหล่งข้อมูลที่เชื่อถือได้หรืออยากให้อ้างอิงถึง</li><li>AI จะแยกให้เห็นว่าอะไรเป็นข้อเท็จจริง อะไรเป็นวิเคราะห์ อะไรยังไม่แน่ใจ</li></ul>
+    </div>
+    <div class="example-block">
+      <div class="block-label ex-label">💡 ตัวอย่าง <span>(เพื่อการเรียนรู้เท่านั้น — ไม่ใช่ช่องให้กรอก)</span></div>
+      <pre class="ex-pre">❓ คำถามหลัก: การทำงานจากที่บ้านมีผลต่อผลผลิตของพนักงานอย่างไร
+🌍 บริบท: ฉันกำลังเขียนบทความสำหรับเว็บไซต์ HR
+📏 ขอบเขต: งานออฟฟิศทั่วไป ไม่รวมงานโรงงาน
+🗓️ ช่วงเวลา: หลังปี 2020 เป็นต้นมา
+🌏 ภูมิภาค: ประเทศไทยและต่างประเทศ
+👥 ผู้อ่าน: ฝ่ายบุคคลและผู้จัดการทั่วไป
+📚 แหล่งข้อมูล: งานวิจัย รายงานภาครัฐ สำนักข่าวเศรษฐกิจชั้นนำ
+🔎 คำถามย่อย: 1) ผลผลิตเพิ่มหรือลด 2) ปัจจัยอะไรมีผลมากที่สุด 3) ข้อเสียที่พบบ่อยคืออะไร
+⚠️ ข้อจำกัด: ไม่ใช้ข้อมูลจากบล็อกส่วนตัว ต้องอ้างแหล่งที่ตรวจสอบได้
+📦 ผลลัพธ์: หัวข้อย่อยพร้อมอ้างอิงแหล่งข้อมูลท้ายบทความ</pre>
+    </div>
+    <div class="tpl-block">
+      <div class="block-label in-label">✏️ TEMPLATE สำหรับคัดลอก</div>
+      <button class="copy-btn" data-target="pre-3">📋 คัดลอก Template</button>
+      <pre class="tpl-pre" id="pre-3">🔍 TEMPLATE: ค้นหาข้อมูล (Research)
+
+📌 วิธีใช้: แทนที่ข้อความใน [ ] ด้วยข้อมูลของคุณ • ไม่ต้องกรอกครบทุกช่อง • คำถามยิ่งชัด คำตอบยิ่งแม่น
+
+❓ คำถามหลัก: [อยากรู้อะไร ถามเป็นประโยคเดียวให้ชัดเจน]
+
+🌍 บริบท/เรื่อง: [เรื่องที่เกี่ยวข้อง ทำไมถึงอยากรู้]
+
+📏 ขอบเขต: [ครอบคลุมเรื่องอะไรบ้าง / ไม่รวมเรื่องอะไร]
+
+🗓️ ช่วงเวลา: [ช่วงเวลาของข้อมูลที่ต้องการ เช่น ปี 2023–2026]
+
+🌏 ภูมิภาค: [ประเทศ/พื้นที่ที่สนใจ]
+
+👥 กลุ่มผู้อ่าน: [ใครจะอ่านคำตอบนี้]
+
+📚 แหล่งข้อมูลที่ต้องการ: [เช่น งานวิจัย ข่าวสำนักใหญ่ รายงานราชการ เว็บไซต์ทางการ]
+
+🔎 คำถามย่อยที่อยากได้คำตอบ: [แตกคำถามใหญ่เป็นคำถามเล็ก ๆ]
+
+⚖️ อยากให้เปรียบเทียบอะไรไหม: [เช่น เปรียบเทียบความคิดเห็นสองฝ่าย]
+
+⚠️ ข้อจำกัด/ข้อควรระวัง: [สิ่งที่ไม่เอา เช่น ไม่เอาข้อมูลเก่า ไม่เอาบล็อกส่วนตัว]
+
+📦 ผลลัพธ์: [อยากได้คำตอบออกมารูปแบบไหน]
+
+—— คำสั่งสุดท้าย ——
+ค้นคว้าและตอบคำถามหลักพร้อมคำถามย่อยทุกข้อ แยกให้ชัดเจนว่าส่วนไหนเป็นข้อเท็จจริงที่มีแหล่งอ้างอิง ส่วนไหนเป็นวิเคราะห์/ความเห็น และส่วนไหนยังไม่แน่นอน อ้างอิงแหล่งที่มาเมื่อมีข้อเท็จจริงสำคัญ ห้ามแต่งข้อมูลหรือแหล่งอ้างอิงขึ้นมาเด็ดขาด ถ้าข้อมูลจากหลายแหล่งขัดแย้งกัน ให้ชี้ให้เห็นพร้อมเหตุผล ถ้าคำถามกว้างเกินไป ให้เสนอวิธีแบ่งเป็นส่วนเล็ก ๆ ก่อน</pre>
+    </div>
+  </div>
+</details>
+
+<details class="card" id="tpl-4" data-search="วิเคราะห์ข้อมูล ไฟล์ excel, csv, ตาราง, รายงานยอดขาย — สั่งให้ ai หา insight จากข้อมูลโดยไม่เดาข้อมูลที่หายไป">
+  <summary>
+    <span class="num">04</span>
+    <span class="emoji">📊</span>
+    <span class="sum-text">
+      <span class="sum-title">วิเคราะห์ข้อมูล</span>
+      <span class="sum-sub">ไฟล์ Excel, CSV, ตาราง, รายงานยอดขาย — สั่งให้ AI หา insight จากข้อมูลโดยไม่เดาข้อมูลที่หายไป</span>
+    </span>
+    <span class="chev">▾</span>
+  </summary>
+  <div class="card-body">
+    <div class="howto">
+      <div class="howto-title">🧭 วิธีใช้</div>
+      <ul><li>แนบไฟล์หรือวางข้อมูลลงในช่อง &#x27;ข้อมูลของฉัน&#x27;</li><li>บอกว่าคอลัมน์ไหนสำคัญและอยากรู้อะไรจากข้อมูล</li><li>AI จะไม่เดาข้อมูลที่ไม่มี — ถ้าขาดอะไรจะบอกตรง ๆ</li></ul>
+    </div>
+    <div class="example-block">
+      <div class="block-label ex-label">💡 ตัวอย่าง <span>(เพื่อการเรียนรู้เท่านั้น — ไม่ใช่ช่องให้กรอก)</span></div>
+      <pre class="ex-pre">🎯 เป้าหมาย: หาสาเหตุที่ยอดขายเดือนล่าสุดลดลง
+📄 ข้อมูลของฉัน: ไฟล์ยอดขาย 6 เดือน (แนบเป็นไฟล์ Excel หรือวางตารางลงตรงนี้)
+🔑 คอลัมน์/ตัวชี้วัดสำคัญ: วันที่ รหัสสินค้า จังหวัด จำนวนขาย ยอดเงิน ช่องทางขาย
+❓ คำถามที่อยากได้คำตอบ: 1) สินค้า/จังหวัดไหนลดมากสุด 2) ลดเพราะจำนวนชิ้นหรือราคา 3) มี pattern ตามช่วงเวลาไหม
+🔍 เงื่อนไข/ขอบเขต: ดูเฉพาะช่องทางออนไลน์
+📦 ผลลัพธ์: ตารางสรุปพร้อมข้อสังเกตและข้อเสนอแนะ</pre>
+    </div>
+    <div class="tpl-block">
+      <div class="block-label in-label">✏️ TEMPLATE สำหรับคัดลอก</div>
+      <button class="copy-btn" data-target="pre-4">📋 คัดลอก Template</button>
+      <pre class="tpl-pre" id="pre-4">📊 TEMPLATE: วิเคราะห์ข้อมูล
+
+📌 วิธีใช้: แทนที่ข้อความใน [ ] ด้วยข้อมูลของคุณ • แนบไฟล์หรือวางข้อมูลตรงช่องที่กำหนด • ไม่จำเป็นต้องกรอกครบทุกช่อง
+
+🎯 เป้าหมาย: [อยากรู้อะไรจากข้อมูลนี้]
+
+📄 ข้อมูลของฉัน: [แนบไฟล์ Excel/CSV ไปพร้อมข้อความนี้ หรือวางตาราง/ข้อมูลตรงนี้]
+
+🔑 คอลัมน์/ตัวชี้วัดสำคัญ: [แต่ละคอลัมน์หมายถึงอะไร ตัวไหนสำคัญสุด]
+
+❓ คำถามที่อยากได้คำตอบ: [เช่น อะไรเพิ่มขึ้น อะไรลดลง ผิดปกติตรงไหน]
+
+🔍 เงื่อนไข/ขอบเขต: [เช่น ดูเฉพาะปีนี้ เฉพาะภูมิภาคไหน ไม่นับรายการเล็ก]
+
+🧮 การคำนวณที่ต้องการ: [เช่น เปอร์เซ็นต์เพิ่มขึ้น ค่าเฉลี่ย การเปรียบเทียบรายเดือน]
+
+📈 สิ่งที่คาดหวัง: [อยากได้ insight แบบไหน เช่น สาเหตุที่เป็นไปได้ แนวโน้ม]
+
+⚠️ ข้อจำกัด: [สิ่งที่ห้ามทำ เช่น ห้ามทำนายเกินข้อมูลที่มี]
+
+📦 ผลลัพธ์: [เช่น ตารางสรุป + ข้อสังเกต + ข้อเสนอแนะ]
+
+—— คำสั่งสุดท้าย ——
+วิเคราะห์ข้อมูลที่ให้มาเพื่อตอบคำถามทุกข้อ ห้ามเดา ห้ามสร้าง หรือห้ามเติมข้อมูลที่ไม่มีในชุดข้อมูลเด็ดขาด ถ้าข้อมูลไม่พอตอบคำถามใด ให้เขียนชัดเจนว่าขาดข้อมูลอะไร แยกให้เห็นว่าอะไรเป็นสิ่งที่ข้อมูลพิสูจน์ได้ กับอะไรเป็นข้อสันนิษฐาน สรุป insight ที่สำคัญที่สุดท้ายสุด</pre>
+    </div>
+  </div>
+</details>
+
+<details class="card" id="tpl-5" data-search="เขียนโปรแกรม สั่งให้ ai เขียนโค้ด ทำสคริปต์ หรือสร้างเว็บ — เหมาะทั้งมือใหม่และมือโปร มีอธิบายเป็นภาษาคน">
+  <summary>
+    <span class="num">05</span>
+    <span class="emoji">💻</span>
+    <span class="sum-text">
+      <span class="sum-title">เขียนโปรแกรม</span>
+      <span class="sum-sub">สั่งให้ AI เขียนโค้ด ทำสคริปต์ หรือสร้างเว็บ — เหมาะทั้งมือใหม่และมือโปร มีอธิบายเป็นภาษาคน</span>
+    </span>
+    <span class="chev">▾</span>
+  </summary>
+  <div class="card-body">
+    <div class="howto">
+      <div class="howto-title">🧭 วิธีใช้</div>
+      <ul><li>บอกเป้าหมายกับภาษาที่ใช้ให้ชัด</li><li>ถ้ามีโค้ดเดิม วางลงในช่องที่กำหนด</li><li>ถ้าเป็นมือใหม่ ให้เขียนในโทนภาษาง่าย ๆ ตอนท้ายเทมเพลต</li></ul>
+    </div>
+    <div class="example-block">
+      <div class="block-label ex-label">💡 ตัวอย่าง <span>(เพื่อการเรียนรู้เท่านั้น — ไม่ใช่ช่องให้กรอก)</span></div>
+      <pre class="ex-pre">🎯 เป้าหมาย: สคริปต์รวมยอดขายรายเดือนจากไฟล์ CSV หลายไฟล์
+🔤 ภาษา/เทคโนโลยี: Python 3.11
+💻 สภาพแวดล้อม: Windows ใช้งานบนเครื่องตัวเอง
+📥 ข้อมูลนำเข้า: โฟลเดอร์ที่มีไฟล์ CSV ยอดขายรายวัน
+✅ พฤติกรรมที่คาดหวัง: อ่านทุกไฟล์ รวมยอดตามเดือน ส่งออกเป็น Excel ไฟล์เดียว
+⚠️ ข้อจำกัด: ไม่ใช้ไลบรารีที่ต้องติดตั้งยาก
+📦 ผลลัพธ์: โค้ดที่รันได้จริง + วิธีใช้สั้น ๆ
+🧪 การทดสอบ: ลองกับไฟล์ตัวอย่าง 3 ไฟล์ ผลต้องถูกต้อง</pre>
+    </div>
+    <div class="tpl-block">
+      <div class="block-label in-label">✏️ TEMPLATE สำหรับคัดลอก</div>
+      <button class="copy-btn" data-target="pre-5">📋 คัดลอก Template</button>
+      <pre class="tpl-pre" id="pre-5">💻 TEMPLATE: เขียนโปรแกรม
+
+📌 วิธีใช้: แทนที่ข้อความใน [ ] ด้วยข้อมูลของคุณ • ไม่จำเป็นต้องกรอกครบทุกช่อง • ถ้าเป็นมือใหม่ให้เขียนโทน &#x27;เข้าใจง่าย&#x27; ในสไตล์การตอบ
+
+🎯 เป้าหมาย: [อยากได้โปรแกรม/สคริปต์/เว็บทำอะไร]
+
+🔤 ภาษา/เทคโนโลยี: [เช่น Python / JavaScript / Excel VBA / HTML+CSS]
+
+💻 สภาพแวดล้อม: [เครื่อง/ระบบที่จะใช้ เช่น Windows, Mac, เว็บเบราว์เซอร์]
+
+📜 โค้ดเดิม (ถ้ามี): [วางโค้ดเดิมตรงนี้ ถ้าไม่มีให้ลบช่องนี้]
+
+🧩 ความต้องการ: [สิ่งที่โค้ดต้องทำ ละเอียดเท่าที่ทำได้]
+
+📥 ข้อมูลนำเข้า: [โค้ดจะได้รับข้อมูลแบบไหน]
+
+✅ พฤติกรรมที่คาดหวัง: [ใส่อะไรแล้วได้อะไรออกมา]
+
+⚠️ ข้อจำกัด: [เช่น ห้ามใช้ไลบรารีเสียเงิน / ต้องรันได้ทันที]
+
+📚 ไลบรารี/สิ่งที่ติดตั้งแล้ว: [ถ้ามี]
+
+📦 ผลลัพธ์: [เช่น โค้ดเต็ม + คำอธิบาย + วิธีใช้]
+
+🧪 การทดสอบ: [อยากให้ทดสอบยังไง]
+
+สไตล์การตอบ: [เลือก 1 ข้อ]
+1. เข้าใจง่าย เหมาะมือใหม่  2. ตรงประเด็น เหมาะมือโปร  3. ให้ AI เลือกให้
+
+—— คำสั่งสุดท้าย ——
+เขียนโค้ดที่ใช้งานได้จริงตามความต้องการทุกข้อ ใส่คอมเมนต์สั้น ๆ อธิบายจุดสำคัญในโค้ด หลังโค้ดให้อธิบายวิธีใช้งานและสิ่งที่ต้องเตรียม ถ้าข้อมูลบางช่องว่าง ให้เลือกทางเลือกที่เหมาะสมและแจ้งว่าเลือกอะไร ถ้าความต้องการขัดกันเอง ให้ชี้ให้เห็นก่อนแล้วเสนอทางแก้</pre>
+    </div>
+  </div>
+</details>
+
+<details class="card" id="tpl-6" data-search="แก้ปัญหา (debugging) โค้ด error สูตร excel ใช้ไม่ได้ workflow พัง — บอกอาการให้ครบ ai จะหาสาเหตุและเสนอวิธีแก้ทีละขั้น">
+  <summary>
+    <span class="num">06</span>
+    <span class="emoji">🐞</span>
+    <span class="sum-text">
+      <span class="sum-title">แก้ปัญหา (Debugging)</span>
+      <span class="sum-sub">โค้ด error สูตร Excel ใช้ไม่ได้ workflow พัง — บอกอาการให้ครบ AI จะหาสาเหตุและเสนอวิธีแก้ทีละขั้น</span>
+    </span>
+    <span class="chev">▾</span>
+  </summary>
+  <div class="card-body">
+    <div class="howto">
+      <div class="howto-title">🧭 วิธีใช้</div>
+      <ul><li>ยิ่งบอกอาการและ &#x27;อะไรที่เปลี่ยนไป&#x27; ชัดเท่าไร ยิ่งเจอเร็ว</li><li>วางข้อความ error เต็ม ๆ อย่าตัด</li><li>AI จะไม่เดาสาเหตุจากข้อมูลที่ไม่มี — ถ้าข้อมูลไม่พอจะบอกว่าต้องเพิ่มอะไร</li></ul>
+    </div>
+    <div class="example-block">
+      <div class="block-label ex-label">💡 ตัวอย่าง <span>(เพื่อการเรียนรู้เท่านั้น — ไม่ใช่ช่องให้กรอก)</span></div>
+      <pre class="ex-pre">✅ ผลที่คาดหวัง: สูตร VLOOKUP ควรดึงชื่อสินค้าตามรหัส
+❌ ผลที่เกิดจริง: ทุกเซลล์ขึ้น #N/A
+💥 ข้อความ error: #N/A
+🔁 อะไรที่เปลี่ยนไป: เพิ่งเพิ่มข้อมูลสินค้าใหม่ชีตที่ 2 เมื่อวาน
+🔧 ส่วนที่เกี่ยวข้อง: =VLOOKUP(A2, สินค้า!A:B, 2, 0)
+💻 สภาพแวดล้อม: Excel 365
+🧪 สิ่งที่ลองแล้ว: ตรวจสอบรหัสสินค้าตรงกันแล้ว แต่ยัง #N/A</pre>
+    </div>
+    <div class="tpl-block">
+      <div class="block-label in-label">✏️ TEMPLATE สำหรับคัดลอก</div>
+      <button class="copy-btn" data-target="pre-6">📋 คัดลอก Template</button>
+      <pre class="tpl-pre" id="pre-6">🐞 TEMPLATE: แก้ปัญหา (Debugging)
+
+📌 วิธีใช้: แทนที่ข้อความใน [ ] ด้วยข้อมูลของคุณ • กรอกเท่าที่รู้ ไม่ต้องกรอกครบ • วาง error เต็ม ๆ อย่าตัด
+
+✅ ผลที่คาดหวัง: [มันควรทำงานยังไง]
+
+❌ ผลที่เกิดจริง: [ตอนนี้มันเป็นยังไง]
+
+💥 ข้อความ error (ถ้ามี): [วางข้อความเต็ม ๆ ตรงนี้]
+
+🔁 อะไรที่เปลี่ยนไปก่อนเกิดปัญหา: [เพิ่ม/ลบ/แก้อะไรไป ติดตั้งอะไรใหม่ไหม]
+
+🔧 โค้ด/สูตร/ส่วนที่เกี่ยวข้อง: [วางตรงนี้]
+
+💻 สภาพแวดล้อม: [เช่น Windows 11 + Chrome / Excel 365 / Python 3.12]
+
+🧪 สิ่งที่ลองแก้แล้ว: [ทำอะไรไปบ้าง ผลเป็นยังไง]
+
+—— คำสั่งสุดท้าย ——
+ช่วยหาสาเหตุของปัญหานี้โดยทำตามลำดับนี้:
+1) ระบุสาเหตุที่เป็นไปได้มากที่สุดพร้อมเหตุผล
+2) ถ้ามีสาเหตุที่เป็นไปได้หลายแบบ ให้เรียงจากน่าจะเป็นสุดก่อน
+3) เสนอวิธีแก้ทีละขั้น
+4) ให้โค้ด/สูตร/ขั้นตอนที่แก้แล้วพร้อมใช้
+5) บอกวิธีตรวจสอบว่าแก้สำเร็จจริง
+ห้ามเดาสาเหตุจากข้อมูลที่ไม่มี ถ้าข้อมูลไม่พอให้สรุปได้ ให้ระบุชัดเจนว่าต้องการข้อมูลเพิ่มเติมอะไร แล้วถามกลับมา</pre>
+    </div>
+  </div>
+</details>
+
+<details class="card" id="tpl-7" data-search="ช่วยคิดตัดสินใจ เลือกไม่ถูกระหว่างหลายทาง — ai ช่วยวิเคราะห์ข้อดีข้อเสีย ความเสี่ยง และคำถามที่ควรถามตัวเอง โดยไม่ตัดสินใจแทนคุณ">
+  <summary>
+    <span class="num">07</span>
+    <span class="emoji">🧠</span>
+    <span class="sum-text">
+      <span class="sum-title">ช่วยคิดตัดสินใจ</span>
+      <span class="sum-sub">เลือกไม่ถูกระหว่างหลายทาง — AI ช่วยวิเคราะห์ข้อดีข้อเสีย ความเสี่ยง และคำถามที่ควรถามตัวเอง โดยไม่ตัดสินใจแทนคุณ</span>
+    </span>
+    <span class="chev">▾</span>
+  </summary>
+  <div class="card-body">
+    <div class="howto">
+      <div class="howto-title">🧭 วิธีใช้</div>
+      <ul><li>เขียนตัวเลือกทั้งหมดที่มีให้ครบ</li><li>บอกว่าให้ความสำคัญกับอะไรมากที่สุด</li><li>AI จะไม่ตอบแทนคุณ แต่จะช่วยให้คุณตัดสินใจเองอย่างมั่นใจ</li></ul>
+    </div>
+    <div class="example-block">
+      <div class="block-label ex-label">💡 ตัวอย่าง <span>(เพื่อการเรียนรู้เท่านั้น — ไม่ใช่ช่องให้กรอก)</span></div>
+      <pre class="ex-pre">🎯 การตัดสินใจ: จะซื้อรถยนต์ไฟฟ้าหรือน้ำมันดี
+🔀 ตัวเลือก: 1) EV รุ่น A  2) รถน้ำมัน รุ่น B  3) รออีกปี
+🌟 เป้าหมาย: ประหยัดเงินในระยะยาว ใช้ในเมืองเป็นหลัก
+🏆 ให้ความสำคัญที่สุด: ต้นทุนรวม 5 ปีแรก
+📌 ข้อเท็จจริงที่รู้แล้ว: วิ่ง 20,000 กม./ปี มีที่ชาร์จที่บ้าน งบซื้อ 8 แสน
+⚠️ ความเสี่ยงที่กังวล: ราคาแบตเสื่อม / ราคาน้ำมันขึ้น
+🤷 สิ่งที่ยังไม่รู้: ค่าประกันรถ EV ตอนนี้</pre>
+    </div>
+    <div class="tpl-block">
+      <div class="block-label in-label">✏️ TEMPLATE สำหรับคัดลอก</div>
+      <button class="copy-btn" data-target="pre-7">📋 คัดลอก Template</button>
+      <pre class="tpl-pre" id="pre-7">🧠 TEMPLATE: ช่วยคิดตัดสินใจ
+
+📌 วิธีใช้: แทนที่ข้อความใน [ ] ด้วยข้อมูลของคุณ • ไม่ต้องกรอกครบทุกช่อง • ยิ่งบอกความสำคัญและข้อจำกัดชัด ยิ่งช่วยได้แม่น
+
+🎯 การตัดสินใจที่ต้องทำ: [ต้องเลือกเรื่องอะไร]
+
+🔀 ตัวเลือก: [เรียกทุกตัวเลือกที่มี]
+
+🌟 เป้าหมาย: [อยากได้ผลลัพธ์สุดท้ายแบบไหน]
+
+📏 เกณฑ์ที่ใช้พิจารณา: [เช่น เงิน เวลา ความเสี่ยง ความสะดวก]
+
+🏆 ให้ความสำคัญที่สุด: [สิ่งเดียวที่สำคัญสุด]
+
+📌 ข้อเท็จจริงที่รู้แล้ว: [ข้อมูลจริงที่มีอยู่ตอนนี้]
+
+⚠️ ความเสี่ยงที่กังวล: [กลัวอะไรเกิดขึ้น]
+
+⚖️ สิ่งที่ต้องแลก: [ถ้าเลือกอันหนึ่ง จะเสียอะไร]
+
+🤷 สิ่งที่ยังไม่รู้: [ข้อมูลที่อยากรู้แต่ยังไม่รู้]
+
+⛔ ข้อจำกัด: [เงื่อนไขตายตัว เช่น งบ ระยะเวลา]
+
+—— คำสั่งสุดท้าย ——
+ช่วยฉันคิดวิเคราะห์การตัดสินใจนี้ โดยไม่ต้องตัดสินใจแทนฉัน ทำตามนี้:
+1) สรุปตารางเปรียบเทียบตัวเลือกตามเกณฑ์ที่ให้มา เน้นสิ่งที่ฉันให้ความสำคัญที่สุด
+2) ชี้ข้อดี ข้อเสีย และความเสี่ยงของแต่ละตัวเลือกอย่างตรงไปตรงมา
+3) บอกว่าสิ่งที่ &#x27;ยังไม่รู้&#x27; มีผลต่อการตัดสินใจมากแค่ไหน และควรหาข้อมูลยังไง
+4) จบด้วยคำถาม 1–3 ข้อที่ฉันควรถามตัวเองก่อนตัดสินใจ
+ถ้าข้อมูลไม่พอ ให้บอกตรง ๆ ว่าขาดอะไร อย่าแต่งข้อมูลเพื่อให้ตอบได้</pre>
+    </div>
+  </div>
+</details>
+
+<details class="card" id="tpl-8" data-search="เรียนรู้/ติวเตอร์ เรียนเรื่องใหม่กับ ai เป็นครูส่วนตัว — ปรับระดับตามคุณ สอนทีละขั้น พร้อมแบบฝึกหัดและเช็คความเข้าใจ">
+  <summary>
+    <span class="num">08</span>
+    <span class="emoji">📚</span>
+    <span class="sum-text">
+      <span class="sum-title">เรียนรู้/ติวเตอร์</span>
+      <span class="sum-sub">เรียนเรื่องใหม่กับ AI เป็นครูส่วนตัว — ปรับระดับตามคุณ สอนทีละขั้น พร้อมแบบฝึกหัดและเช็คความเข้าใจ</span>
+    </span>
+    <span class="chev">▾</span>
+  </summary>
+  <div class="card-body">
+    <div class="howto">
+      <div class="howto-title">🧭 วิธีใช้</div>
+      <ul><li>บอกระดับความรู้ตอนนี้ให้ตรง ๆ ไม่ต้องอาย</li><li>เลือกโหมด &#x27;สอนทีละขั้น&#x27; ถ้าอยากเรียนช้า ๆ แต่แน่น</li><li>ตอบคำถาม AI ระหว่างเรียน เพื่อให้ปรับการสอนให้เหมาะกับคุณ</li></ul>
+    </div>
+    <div class="example-block">
+      <div class="block-label ex-label">💡 ตัวอย่าง <span>(เพื่อการเรียนรู้เท่านั้น — ไม่ใช่ช่องให้กรอก)</span></div>
+      <pre class="ex-pre">📖 เรื่องที่อยากเรียน: การลงทุนแบบ DCA
+📍 ระดับความรู้ตอนนี้: รู้จักแค่ว่า DCA คือซื้อสม่ำเสมอ
+🎓 เป้าหมาย: เริ่มลงทุนเองได้ภายในเดือนนี้
+💬 เหตุผลที่อยากเรียน: อยากให้เงินเดือนเติบโตแต่ไม่รู้จะเริ่มยังไง
+🗣️ สไตล์การอธิบาย: เปรียบเทียบกับเรื่องชีวิตประจำวัน
+✍️ แบบฝึกหัด: อยากได้ ท้ายบท
+📶 ระดับความยาก: ปานกลาง</pre>
+    </div>
+    <div class="tpl-block">
+      <div class="block-label in-label">✏️ TEMPLATE สำหรับคัดลอก</div>
+      <button class="copy-btn" data-target="pre-8">📋 คัดลอก Template</button>
+      <pre class="tpl-pre" id="pre-8">📚 TEMPLATE: เรียนรู้/ติวเตอร์
+
+📌 วิธีใช้: แทนที่ข้อความใน [ ] ด้วยข้อมูลของคุณ • บอกระดับความรู้ตอนนี้ตามตรง • เลือกโหมดสอนได้ตามใจ
+
+📖 เรื่องที่อยากเรียน: [อยากเรียนอะไร]
+
+📍 ระดับความรู้ตอนนี้: [มือใหม่สิ้นดี / รู้มาบ้าง / ค่อนข้างแน่น — บอกตามตรง]
+
+🎓 เป้าหมายการเรียนรู้: [อยากทำอะไรได้หลังเรียนจบ]
+
+💬 เหตุผลที่อยากเรียน: [เพื่ออะไร เช่น ใช้งานจริง / สอบ / ทำงาน]
+
+🗣️ สไตล์การอธิบาย: [เช่น เปรียบเทียบกับชีวิตประจำวัน / ตรง ๆ วิชาการ / เล่าเป็นตัวอย่าง]
+
+✍️ แบบฝึกหัด: [อยากได้ท้ายบทไหม / อยากได้แบบฝึกหัดแบบไหน]
+
+📶 ระดับความยาก: [เบา / ปานกลาง / ท้าทาย]
+
+🔁 วิธีให้ feedback: [เช่น ถ้าตอบผิดให้อธิบายว่าผิดตรงไหน]
+
+โหมดการสอน: [เลือก 1 ข้อ]
+1. สอนทีละขั้น ทีละน้อย ถามก่อนไปต่อ  2. สอนครบทั้งบทในครั้งเดียว  3. ให้ AI เลือกให้
+
+—— คำสั่งสุดท้าย ——
+เป็นครูสอนเรื่องที่ฉันระบุ เริ่มจากระดับความรู้ที่ฉันบอก ใช้สไตล์การอธิบายที่เลือก ถ้าเลือก &#x27;สอนทีละขั้น&#x27; ให้สอนทีละหัวข้อ แล้วถามฉันด้วยคำถามสั้น ๆ ก่อนไปต่อ ปรับระดับความยากตามคำตอบของฉัน ใช้ตัวอย่างจากชีวิตจริงเสมอ ถ้าฉันตอบผิด อย่าตำหนิ ให้อธิบายว่าผิดตรงไหนและทำไม จบด้วยสรุปสิ่งที่เรียน</pre>
+    </div>
+  </div>
+</details>
+
+<details class="card" id="tpl-9" data-search="บทบาท/จำลองสถานการณ์ ฝึกสัมภาษณ์งาน เจรจาต่อรอง คุยกับลูกค้า หรือคุยกับหัวหน้า — ai สวมบทบาทให้คุณซ้อมจริงก่อนของจริง">
+  <summary>
+    <span class="num">09</span>
+    <span class="emoji">🧑‍💼</span>
+    <span class="sum-text">
+      <span class="sum-title">บทบาท/จำลองสถานการณ์</span>
+      <span class="sum-sub">ฝึกสัมภาษณ์งาน เจรจาต่อรอง คุยกับลูกค้า หรือคุยกับหัวหน้า — AI สวมบทบาทให้คุณซ้อมจริงก่อนของจริง</span>
+    </span>
+    <span class="chev">▾</span>
+  </summary>
+  <div class="card-body">
+    <div class="howto">
+      <div class="howto-title">🧭 วิธีใช้</div>
+      <ul><li>กำหนดบทบาทของ AI และของคุณให้ชัด</li><li>บอกสถานการณ์และเป้าหมายของการซ้อม</li><li>ถ้าอยากหยุดหรือขอ feedback ให้พิมพ์ &#x27;ขอ feedback&#x27; ได้ตลอด</li></ul>
+    </div>
+    <div class="example-block">
+      <div class="block-label ex-label">💡 ตัวอย่าง <span>(เพื่อการเรียนรู้เท่านั้น — ไม่ใช่ช่องให้กรอก)</span></div>
+      <pre class="ex-pre">🎭 บทบาทของ AI: หัวหน้าฝ่ายขายที่ดูเข้มงวดแต่ยุติธรรม
+🙋 บทบาทของฉัน: ลูกน้องที่จะขอขึ้นเงินเดือน
+🎬 สถานการณ์: ประชุมตัวต่อตัวปลายปี ฉันเพิ่งทำยอดเกินเป้า 2 ไตรมาสติด
+🎯 เป้าหมาย: ฝึกเจรจาให้ได้เพิ่มอย่างน้อย 10%
+📜 ข้อมูลพื้นหลัง: ฉันทำงานที่นี่ 3 ปี รับผิดชอบลูกค้า 12 ราย
+📏 กฎกติกา: AI ตั้งคำถามกดดันตามจริง แต่ไม่ใช่คำหยาบ
+🗣️ โทนภาษา: มืออาชีพ แต่ไม่เกินจริง
+🏁 เงื่อนไขการจบ: จบเมื่อตกลงตัวเลขได้ หรือฉันพิมพ์ &#x27;จบ&#x27;</pre>
+    </div>
+    <div class="tpl-block">
+      <div class="block-label in-label">✏️ TEMPLATE สำหรับคัดลอก</div>
+      <button class="copy-btn" data-target="pre-9">📋 คัดลอก Template</button>
+      <pre class="tpl-pre" id="pre-9">🧑‍💼 TEMPLATE: บทบาท/จำลองสถานการณ์
+
+📌 วิธีใช้: แทนที่ข้อความใน [ ] ด้วยข้อมูลของคุณ • กำหนดบทบาทและสถานการณ์ให้ชัด • พิมพ์ &#x27;ขอ feedback&#x27; ได้ตลอดเพื่อขอคำแนะนำ
+⚠️ โปรดจำ: นี่คือการจำลองบทบาทเพื่อฝึกฝนเท่านั้น AI ไม่ใช่บุคคลจริง
+
+🎭 บทบาทของ AI: [ให้ AI เป็นใคร เช่น ผู้สัมภาษณ์ / ลูกค้า / หัวหน้า / คู่เจรจา]
+
+🙋 บทบาทของฉัน: [คุณเป็นใครในสถานการณ์นี้]
+
+🎬 สถานการณ์: [เกิดอะไรขึ้น ที่ไหน เกี่ยวกับอะไร]
+
+🎯 เป้าหมายของการซ้อม: [อยากฝึกอะไร เช่น ตอบคำถามกดดัน / โน้มน้าวใจ]
+
+📜 ข้อมูลพื้นหลัง: [ข้อมูลที่ AI ควรรู้ก่อนเริ่ม]
+
+📏 กฎกติกา: [สิ่งที่ทำได้/ไม่ได้ เช่น อย่าเบี่ยงเบนจากบทบาท]
+
+🗣️ โทนภาษา: [เช่น มืออาชีพ / เป็นกันเอง / เข้มงวด]
+
+💬 สไตล์การโต้ตอบ: [เช่น คุยไปมาเหมือนจริง / AI เริ่มก่อน]
+
+🔁 วิธีให้ feedback: [เมื่อไรและแบบไหน เช่น หลังจบเท่านั้น / แบบเรียลไทม์]
+
+🏁 เงื่อนไขการจบ: [เมื่อไรถือว่าจบ]
+
+—— คำสั่งสุดท้าย ——
+เริ่มจำลองสถานการณ์ทันที สวมบทบาทที่กำหนดตลอดการสนทนา ตอบสั้น กระชับ เหมือนบทสนทนาจริง อย่าออกจากบทบาทเว้นแต่ฉันจะขอ feedback หรือบอกว่าจบ เมื่อสถานการณ์จบ (หรือเมื่อฉันขอ) ให้สรุปสิ่งที่ฉันทำได้ดี สิ่งที่ควรปรับ พร้อมข้อเสนอแนะเฉพาะเจาะจง</pre>
+    </div>
+  </div>
+</details>
+
+<details class="card" id="tpl-10" data-search="ทำงานหลายขั้นตอน (workflow) งานที่ต้องทำหลายอย่างต่อเนื่องกัน เช่น จัดไฟล์ วางแผน ตรวจเอกสาร หรือย่อยงานใหญ่ — ai จะวางแผน ทำทีละขั้น ตรวจงาน และส่งมอบผลสุดท้าย">
+  <summary>
+    <span class="num">10</span>
+    <span class="emoji">🔄</span>
+    <span class="sum-text">
+      <span class="sum-title">ทำงานหลายขั้นตอน (Workflow)</span>
+      <span class="sum-sub">งานที่ต้องทำหลายอย่างต่อเนื่องกัน เช่น จัดไฟล์ วางแผน ตรวจเอกสาร หรือย่อยงานใหญ่ — AI จะวางแผน ทำทีละขั้น ตรวจงาน และส่งมอบผลสุดท้าย</span>
+    </span>
+    <span class="chev">▾</span>
+  </summary>
+  <div class="card-body">
+    <div class="howto">
+      <div class="howto-title">🧭 วิธีใช้</div>
+      <ul><li>บอกเป้าหมายรวมให้ชัดที่สุด</li><li>แตกขั้นตอนหลัก ๆ ที่คุณนึกออก (ถ้ามี) ที่เหลือให้ AI วางแผนเอง</li><li>กำหนดเงื่อนไขการหยุดและผลลัพธ์สุดท้ายที่ต้องการ</li></ul>
+    </div>
+    <div class="example-block">
+      <div class="block-label ex-label">💡 ตัวอย่าง <span>(เพื่อการเรียนรู้เท่านั้น — ไม่ใช่ช่องให้กรอก)</span></div>
+      <pre class="ex-pre">🎯 เป้าหมายรวม: เตรียมชุดนำเสนอขายสินค้าใหม่ให้ทีมขาย 10 คน
+📥 ข้อมูลนำเข้า: โบรชัวร์สินค้า + ข้อมูลลูกค้ากลุ่มเป้าหมาย (แนบเป็นไฟล์)
+🪜 ขั้นตอนที่คิดไว้: 1) สรุปจุดขาย  2) ทำสไลด์โครง  3) เขียนสคริปต์พูด  4) เตรียมคำถาม-คำตอบ
+⚖️ กฎการตัดสินใจ: ถ้าข้อมูลขัดกัน ให้ยึดเอกสารทางการที่ให้มา
+🥇 สิ่งที่สำคัญที่สุด: สไลด์ต้องเข้าใจได้ใน 3 นาที
+✅ การตรวจสอบคุณภาพ: ตรวจว่าทุกสไลด์ตอบคำถาม &#x27;ลูกค้าได้อะไร&#x27; ได้
+⏹️ เงื่อนไขการหยุด: ได้ครบทั้ง 4 ชิ้นงาน
+📦 ผลลัพธ์สุดท้าย: ไฟล์เนื้อหาพร้อมนำเสนอครบชุด</pre>
+    </div>
+    <div class="tpl-block">
+      <div class="block-label in-label">✏️ TEMPLATE สำหรับคัดลอก</div>
+      <button class="copy-btn" data-target="pre-10">📋 คัดลอก Template</button>
+      <pre class="tpl-pre" id="pre-10">🔄 TEMPLATE: ทำงานหลายขั้นตอน (Workflow)
+
+📌 วิธีใช้: แทนที่ข้อความใน [ ] ด้วยข้อมูลของคุณ • แตกขั้นตอนเท่าที่คิดออก ที่เหลือให้ AI วางแผนเอง • ไม่ต้องกรอกครบทุกช่อง
+
+🎯 เป้าหมายรวม: [ผลสุดท้ายที่ต้องการคืออะไร]
+
+📥 ข้อมูลนำเข้า: [ไฟล์/เอกสาร/ข้อมูลที่ใช้ แนบหรือวางตรงนี้]
+
+🪜 ขั้นตอนที่คิดไว้: [1) ...  2) ...  3) ... — ถ้ายังไม่แน่ใจให้เขียน &#x27;ให้ AI วางแผน&#x27;]
+
+⚖️ กฎการตัดสินใจ: [ถ้าเจอข้อมูลขัดกัน/ไม่ชัดเจน ให้ทำยังไง]
+
+🥇 สิ่งที่สำคัญที่สุด: [อะไรคือสำคัญสุดที่สุดของงานนี้]
+
+✅ การตรวจสอบคุณภาพ: [ตรวจยังไงว่าแต่ละขั้นผ่าน]
+
+🕳️ ถ้าข้อมูลหาย/ไม่พอ: [ให้ AI เดาเองได้ไหม / หรือให้ถามกลับ]
+
+⏹️ เงื่อนไขการหยุด: [เมื่อไรถือว่างานเสร็จ]
+
+📦 ผลลัพธ์สุดท้าย: [อยากได้อะไรส่งมอบ เช่น เอกสาร/รายงาน/ชุดคำตอบ]
+
+—— คำสั่งสุดท้าย ——
+ทำงานตามแผนต่อไปนี้: 1) วางแผนโดยแตกเป้าหมายรวมเป็นขั้นตอนที่ชัดเจน 2) ทำทีละขั้นตามลำดับ 3) ตรวจสอบผลของแต่ละขั้นตามเกณฑ์คุณภาพก่อนไปต่อ ถ้าขั้นไหนไม่ผ่านให้แก้ก่อน 4) ถ้าข้อมูลไม่พอ ให้ทำตามช่อง &#x27;ถ้าข้อมูลหาย&#x27; 5) เมื่อครบเงื่อนไขการหยุด ให้ส่งมอบผลลัพธ์สุดท้ายพร้อมสรุปสิ่งที่ทำไปทั้งหมด</pre>
+    </div>
+  </div>
+</details>
+
+
+<details class="card" id="tpl-11" data-search="แต่งเพลง เนื้อเพลง song hook เพลง ดนตรี แนวเพลง suno — แต่งเพลงแบบง่ายด้วย hook emotion identity">
+  <summary>
+    <span class="num">11</span>
+    <span class="emoji">🎵</span>
+    <span class="sum-text">
+      <span class="sum-title">แต่งเพลง</span>
+      <span class="sum-sub">เริ่มแต่งได้ด้วย 3 อย่าง: Hook, Emotion, Identity — แบบง่าย ไม่ต้องใช้ Framework เต็ม แต่งก่อน วิเคราะห์ทีหลัง</span>
+    </span>
+    <span class="chev">▾</span>
+  </summary>
+  <div class="card-body">
+    <div class="howto">
+      <div class="howto-title">🧭 วิธีใช้</div>
+      <ul><li>กรอก HOOK, EMOTION, IDENTITY ก็พอ ที่เหลือข้ามได้</li><li>EMOTION ให้เขียนเป็นการเคลื่อนที่ เช่น A → B ไม่ใช่อารมณ์เดียวนิ่ง ๆ</li><li>แต่งเสร็จแล้วเลือก 'รีวิวย่อ' เพื่อให้คะแนนเบื้องต้น ถ้าอยากรีวิวเชิงลึกค่อยใช้ Framework เต็มของคุณทีหลัง</li></ul>
+    </div>
+    <div class="example-block">
+      <div class="block-label ex-label">💡 ตัวอย่าง <span>(เพื่อการเรียนรู้เท่านั้น — ไม่ใช่ช่องให้กรอก)</span></div>
+      <pre class="ex-pre">🎼 HOOK · สิ่งแรกที่คนจะจำ: Gravity breaks apart
+💓 EMOTION · การเดินทางของอารมณ์: Loss → Transcendence (สูญเสีย → ก้าวข้ามไปสู่ความโปร่งเบา)
+🧬 IDENTITY · เอกลักษณ์ของเพลง: Cyber-Organic
+🌐 ภาษาเนื้อเพลง: 3. ไทยผสมอังกฤษ
+🛠️ ต้องการอะไร: 1. เนื้อเพลง + แนวดนตรี
+📏 โครงสร้าง: 2. มาตรฐาน (Verse – Pre-Chorus – Chorus – Bridge)
+🔎 หลังแต่งเสร็จ: 2. รีวิวย่อให้ด้วย</pre>
+    </div>
+    <div class="tpl-block">
+      <div class="block-label in-label">✏️ TEMPLATE สำหรับคัดลอก</div>
+      <button class="copy-btn" data-target="pre-11">📋 คัดลอก Template</button>
+      <pre class="tpl-pre" id="pre-11">🎵 TEMPLATE: แต่งเพลง (แบบง่าย)
+
+📌 วิธีใช้: กรอกแค่ 3 ช่องแรกก็เริ่มแต่งได้ • ที่เหลือเป็นตัวเลือก ข้ามได้ • แต่งก่อน วิเคราะห์ทีหลัง
+
+🎼 HOOK · สิ่งแรกที่คนจะจำ: [วลี / ทำนอง / จังหวะ / เสียง เช่น "Gravity breaks apart"]
+
+💓 EMOTION · การเดินทางของอารมณ์: [จาก → ไป เช่น สูญเสีย → ยอมรับ / กลัว → กล้า / โดดเดี่ยว → เชื่อมต่อ]
+
+🧬 IDENTITY · เอกลักษณ์ของเพลง: [แนวหรือบุคลิกที่เป็นตัวคุณ เช่น Dark Romantic / Korean OST Ballad / Industrial Dream Pop]
+
+🎯 เรื่องราว/ธีม (ถ้ามี): [เรื่องที่อยากเล่า หรือภาพในใจ]
+
+🌐 ภาษาเนื้อเพลง: [เลือก 1 ข้อ]
+1. ไทย  2. อังกฤษ  3. ไทยผสมอังกฤษ
+
+🛠️ ต้องการอะไร: [เลือก 1 ข้อ]
+1. เนื้อเพลง + แนวดนตรี  2. เนื้อเพลงอย่างเดียว  3. Style prompt สำหรับโปรแกรม AI สร้างเพลง
+
+📏 โครงสร้าง: [เลือก 1 ข้อ]
+1. สั้น (Verse – Chorus)  2. มาตรฐาน (Verse – Pre-Chorus – Chorus – Bridge)  3. ให้ AI เลือกให้
+
+🚫 สิ่งที่ไม่เอา: [เช่น ไม่เอาคำซ้ำซาก ไม่เอาเนื้อหาโศกเกินไป]
+
+🔎 หลังแต่งเสร็จ: [เลือก 1 ข้อ]
+1. ไม่ต้องรีวิว  2. รีวิวย่อให้ด้วย
+
+—— คำสั่งสุดท้าย ——
+เริ่มแต่งทันที ไม่ต้องวิเคราะห์ยาวก่อน ยึด 3 หลักนี้: 1) HOOK ต้องเป็นสิ่งแรกที่คนจำได้ วางไว้ในจุดที่เด่นที่สุดและซ้ำอย่างมีจังหวะ 2) EMOTION ต้องเคลื่อนจากจุดเริ่มไปจุดจบจริง ห้ามให้อารมณ์นิ่งตลอดเพลง 3) IDENTITY ต้องกำหนดทุกการตัดสินใจ ทั้งคำ ภาพ และแนวดนตรี ใช้ถ้อยคำที่ให้ความรู้สึกแบบมนุษย์ ไม่ใช่ศัพท์เทคนิค ส่งงานตามช่อง 'ต้องการอะไร' ถ้าช่องไหนว่างให้เลือกเองแล้วบอกสั้น ๆ ว่าเลือกอะไร ถ้าเลือก 'รีวิวย่อ' ให้ต่อท้ายด้วยคะแนนเต็ม 10 ใน 5 ด้าน (Hook, Emotion, Identity, เนื้อเพลง, ภาพรวม) พร้อมจุดแข็ง 1 ข้อ จุดอ่อน 1 ข้อ และวิธีปรับ 1 ข้อ</pre>
+    </div>
+  </div>
+</details>
+
+  <section class="guide" id="guide">
+    <h2>🗺️ ไม่รู้จะเลือกเทมเพลตไหน? ดูตารางนี้</h2>
+    <p>คิดในใจว่าอยากให้ AI ช่วยอะไร แล้วกดแถวที่ตรงเพื่อไปยังเทมเพลตนั้น</p>
+    <a class="g-row" href="#tpl-1"><div class="g-need">อยากให้ AI เขียน / สรุป / อธิบาย / แปล / ปรับข้อความ</div><div class="g-arrow">→</div><div class="g-tpl">📝 งานทั่วไป (1)</div></a>
+<a class="g-row" href="#tpl-2"><div class="g-need">อยากได้ภาพ โปสเตอร์ ปก ภาพโฆษณา</div><div class="g-arrow">→</div><div class="g-tpl">🎨 สร้างภาพ (2)</div></a>
+<a class="g-row" href="#tpl-2b"><div class="g-need">อยากได้ภาพสไตล์อนิเมะ / การ์ตูนญี่ปุ่น</div><div class="g-arrow">→</div><div class="g-tpl">🖼️ สร้างภาพ แนว Anime (2B)</div></a>
+<a class="g-row" href="#tpl-3"><div class="g-need">อยากรู้เรื่องอะไรสักอย่างอย่างละเอียด มีหลักฐาน</div><div class="g-arrow">→</div><div class="g-tpl">🔍 ค้นหาข้อมูล (3)</div></a>
+<a class="g-row" href="#tpl-4"><div class="g-need">มีไฟล์ Excel / ตาราง / ตัวเลข ให้ช่วยดู</div><div class="g-arrow">→</div><div class="g-tpl">📊 วิเคราะห์ข้อมูล (4)</div></a>
+<a class="g-row" href="#tpl-5"><div class="g-need">อยากได้โค้ด / สคริปต์ / เว็บ</div><div class="g-arrow">→</div><div class="g-tpl">💻 เขียนโปรแกรม (5)</div></a>
+<a class="g-row" href="#tpl-6"><div class="g-need">ของพัง / error / ใช้ไม่ได้</div><div class="g-arrow">→</div><div class="g-tpl">🐞 แก้ปัญหา (6)</div></a>
+<a class="g-row" href="#tpl-7"><div class="g-need">เลือกไม่ถูก อยากให้ช่วยคิด</div><div class="g-arrow">→</div><div class="g-tpl">🧠 ช่วยคิดตัดสินใจ (7)</div></a>
+<a class="g-row" href="#tpl-8"><div class="g-need">อยากเรียนรู้เรื่องใหม่</div><div class="g-arrow">→</div><div class="g-tpl">📚 เรียนรู้/ติวเตอร์ (8)</div></a>
+<a class="g-row" href="#tpl-9"><div class="g-need">อยากซ้อมสัมภาษณ์ เจรจา คุยกับลูกค้า</div><div class="g-arrow">→</div><div class="g-tpl">🧑‍💼 บทบาท/จำลองสถานการณ์ (9)</div></a>
+<a class="g-row" href="#tpl-10"><div class="g-need">งานใหญ่ที่ต้องทำหลายขั้นตอนต่อกัน</div><div class="g-arrow">→</div><div class="g-tpl">🔄 ทำงานหลายขั้นตอน (10)</div></a>
+<a class="g-row" href="#tpl-11"><div class="g-need">อยากแต่งเพลง / หา hook และอารมณ์ของเพลง</div><div class="g-arrow">→</div><div class="g-tpl">🎵 แต่งเพลง (11)</div></a>
+  </section>
+
+  <footer>🧰 คลัง Prompt Template — ออกแบบมาเพื่อคนทั่วไป • คัดลอก วาง กรอก ใช้ได้เลย</footer>
+
+</div>
+<div class="author"><b>Danupon Boonthanawatthana (Ben)</b><br>Sales Performance Manager</div>
+</main>
+
+<script>
+// ---------- Theme toggle (default dark) ----------
+const themeBtn = document.getElementById('themeBtn');
+const root = document.documentElement;
+function setTheme(t) {
+  root.setAttribute('data-theme', t);
+  themeBtn.textContent = t === 'dark' ? '☀️' : '🌙';
+  try { localStorage.setItem('tpl-theme', t); } catch(e) {}
+}
+try {
+  const saved = localStorage.getItem('tpl-theme');
+  if (saved === 'dark' || saved === 'light') setTheme(saved); else setTheme('dark');
+} catch(e) { setTheme('dark'); }
+themeBtn.addEventListener('click', () => {
+  setTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+});
+
+// ---------- วัดความสูง header จริง เพื่อให้การกระโดดไปการ์ดไม่โดนบัง ----------
+const siteHeader = document.getElementById('siteHeader');
+function updateHeaderHeight() {
+  root.style.setProperty('--header-h', siteHeader.offsetHeight + 'px');
+}
+updateHeaderHeight();
+window.addEventListener('resize', updateHeaderHeight);
+window.addEventListener('load', updateHeaderHeight);
+if (window.ResizeObserver) new ResizeObserver(updateHeaderHeight).observe(siteHeader);
+
+// ---------- Copy buttons ----------
+document.querySelectorAll('.copy-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const pre = document.getElementById(btn.dataset.target);
+    const text = pre.innerText;
+    const done = () => {
+      btn.textContent = '✅ คัดลอกแล้ว!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = '📋 คัดลอก Template'; btn.classList.remove('copied'); }, 1800);
+    };
+    function fallback() {
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed'; ta.style.opacity = '0'; ta.style.top = '0';
+      document.body.appendChild(ta);
+      ta.focus(); ta.select();
+      try { ta.setSelectionRange(0, 99999); } catch(e) {} // สำหรับ iOS
+      try { document.execCommand('copy'); } catch(e) {}
+      document.body.removeChild(ta); done();
+    }
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(done).catch(fallback);
+    } else { fallback(); }
+  });
+});
+
+// ---------- Expand / collapse all ----------
+document.getElementById('expandAll').addEventListener('click', () => {
+  document.querySelectorAll('details.card').forEach(d => { if (!d.classList.contains('hidden')) d.open = true; });
+});
+document.getElementById('collapseAll').addEventListener('click', () => {
+  document.querySelectorAll('details.card').forEach(d => d.open = false);
+});
+
+// ---------- Search filter ----------
+const searchInput = document.getElementById('search');
+const noResult = document.getElementById('noResult');
+function applyFilter() {
+  const q = searchInput.value.trim().toLowerCase();
+  let visible = 0;
+  document.querySelectorAll('details.card').forEach(c => {
+    const hit = !q || c.dataset.search.includes(q);
+    c.classList.toggle('hidden', !hit);
+    if (hit) visible++;
+  });
+  noResult.style.display = visible ? 'none' : 'block';
+}
+searchInput.addEventListener('input', applyFilter);
+
+// ---------- กด chip / แถวในตารางเลือก: ล้างการค้นหา + เปิดการ์ดให้เอง ----------
+document.querySelectorAll('a.chip, a.g-row').forEach(a => {
+  a.addEventListener('click', () => {
+    if (searchInput.value) { searchInput.value = ''; applyFilter(); }
+    const el = document.querySelector(a.getAttribute('href'));
+    if (el) el.open = true;
+  });
+});
+</script>
+
+
+<script>
+/* ===== V2: ฟอร์มกรอกสด + เตือนช่องว่าง + จำโปรไฟล์/ฉบับร่าง ===== */
+(function(){
+var $=function(s,r){return (r||document).querySelector(s)};
+var store={
+  get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},
+  set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}},
+  del:function(k){try{localStorage.removeItem(k)}catch(e){}}
+};
+function parse(s,d){try{var o=JSON.parse(s);return o&&typeof o==="object"?o:d}catch(e){return d}}
+function copyText(text,done){
+  function fb(){
+    var ta=document.createElement("textarea");
+    ta.value=text;ta.setAttribute("readonly","");
+    ta.style.cssText="position:fixed;opacity:0;top:0";
+    document.body.appendChild(ta);ta.focus();ta.select();
+    try{ta.setSelectionRange(0,99999)}catch(e){}
+    try{document.execCommand("copy")}catch(e){}
+    document.body.removeChild(ta);done();
+  }
+  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(done).catch(fb)}else{fb()}
+}
+function flash(b,ok,base){b.textContent=ok;b.classList.add("copied");setTimeout(function(){b.textContent=base;b.classList.remove("copied")},1800)}
+function mk(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
+
+/* ---------- โปรไฟล์ (ใช้ร่วมทุกเทมเพลต) ---------- */
+var PF=[["name","ชื่อ","input"],["role","บทบาท / อาชีพ","input"],["tone","โทนภาษาที่ชอบ","input"],["extra","สิ่งที่อยากให้ AI รู้เกี่ยวกับฉัน","textarea"]];
+var profile=parse(store.get("tpl-profile"),{});
+if(profile.on===undefined)profile.on=true;
+var listeners=[];
+function profileLine(){
+  if(!profile.on)return "";
+  var parts=[];
+  PF.forEach(function(p){var v=(profile[p[0]]||"").trim();if(v)parts.push(p[1]+" "+v)});
+  return parts.length?"👤 เกี่ยวกับฉัน: "+parts.join(" • "):"";
+}
+function saveProfile(){store.set("tpl-profile",JSON.stringify(profile));listeners.forEach(function(f){f()})}
+
+var pf=mk("details","profile");
+pf.innerHTML='<summary>👤 <b>โปรไฟล์ของฉัน</b> <span>(ไม่บังคับ — จำไว้ในเบราว์เซอร์นี้ ใช้ได้ทุกเทมเพลต)</span></summary><div class="pf-body"><div class="form" id="pfForm"></div><label class="pf-on"><input type="checkbox" id="pfOn"> แนบโปรไฟล์ไว้ต้น Prompt ทุกครั้ง</label><div class="pf-note">🔒 ข้อมูลเก็บเฉพาะในเบราว์เซอร์ของคุณเท่านั้น ไม่ส่งไปที่ไหน — แต่ไม่ควรใส่ข้อมูลลับหรือข้อมูลส่วนตัวที่ละเอียดอ่อน</div><button class="btn-sub" id="pfClear" type="button">ล้างโปรไฟล์</button></div>';
+$("nav.chips").before(pf);
+var pfForm=$("#pfForm"),pfEls={};
+PF.forEach(function(p){
+  var w=mk("div","fld"),lb=mk("label",null,p[1]),el=mk(p[2]);
+  el.id="pf-"+p[0];lb.htmlFor=el.id;
+  if(p[2]==="textarea")el.rows=2;
+  el.value=profile[p[0]]||"";
+  el.addEventListener("input",function(){profile[p[0]]=el.value;saveProfile()});
+  pfEls[p[0]]=el;w.appendChild(lb);w.appendChild(el);pfForm.appendChild(w);
+});
+var pfOn=$("#pfOn");pfOn.checked=!!profile.on;
+pfOn.addEventListener("change",function(){profile.on=pfOn.checked;saveProfile()});
+$("#pfClear").addEventListener("click",function(){
+  PF.forEach(function(p){profile[p[0]]="";pfEls[p[0]].value=""});saveProfile();
+});
+
+/* ---------- ฟอร์มของแต่ละเทมเพลต ---------- */
+document.querySelectorAll("details.card").forEach(function(card){
+  var n=card.id.replace("tpl-","");
+  var pre=$(".tpl-pre",card),block=$(".tpl-block",card);
+  if(!pre||!block)return;
+  var orig=pre.textContent,lines=orig.split("\n"),items=[],fields=[];
+  for(var i=0;i<lines.length;i++){
+    var m=lines[i].match(/^(.+?):\s*\[(.*)\]\s*$/);
+    if(m){
+      var opts=null,nx=lines[i+1];
+      if(nx&&/^\d+\.\s/.test(nx.trim())){opts=nx.trim().split(/\s{2,}/);i++}
+      var hint=m[2].trim(),def="",dm=hint.match(/^=(\d+)$/);
+      if(opts&&dm){def=opts[parseInt(dm[1],10)-1]||"";hint="เลือก 1 ข้อ"}
+      else if(hint.charAt(0)==="="){hint=hint.slice(1).trim();def=hint}
+      var it={f:true,label:m[1].trim(),hint:hint,def:def,opts:opts,id:fields.length};
+      items.push(it);fields.push(it);
+    }else items.push({f:false,raw:lines[i]});
+  }
+  var draft=parse(store.get("tpl-draft-"+n),{});
+  var form=mk("div","form");
+  fields.forEach(function(it){
+    var w=mk("div","fld"),lb=mk("label",null,""),el;
+    lb.textContent=it.label;
+    if(it.opts){
+      el=mk("select");
+      el.appendChild(new Option("— ข้ามช่องนี้ —",""));
+      it.opts.forEach(function(o){el.appendChild(new Option(o,o))});
+    }else{el=mk("textarea");el.rows=2;el.placeholder=it.hint}
+    el.id="f-"+n+"-"+it.id;lb.htmlFor=el.id;
+    el.value=(draft[it.id]!==undefined)?draft[it.id]:(it.def||"");
+    el.addEventListener("input",function(){w.classList.remove("need");refresh()});
+    el.addEventListener("change",refresh);
+    it.el=el;it.box=w;w.appendChild(lb);w.appendChild(el);form.appendChild(w);
+  });
+  function joinCompose(keepEmpty){
+    var parts=[],ar="";
+    fields.forEach(function(it){
+      var v=it.el.value.trim();
+      if(it.opts)v=v.replace(/^\d+\.\s*/,"");
+      if(!v){if(!keepEmpty)return;v="["+it.label.replace(/^\S+\s+/,"").split(" · ")[0]+"]"}
+      if(it.label.indexOf("ASPECT")>=0)ar=v;else parts.push(v);
+    });
+    return parts.join(", ")+(ar?" "+ar:"");
+  }
+  function compose(keepEmpty){
+    if(card.dataset.join)return joinCompose(keepEmpty);
+    var out=[],p=profileLine();
+    if(p){out.push(p);out.push("")}
+    items.forEach(function(it){
+      if(it.f){
+        var v=it.el.value.trim();
+        if(v)out.push(it.label+": "+v);
+        else if(keepEmpty)out.push(it.label+": [ยังไม่ได้กรอก]");
+      }else if(it.raw.indexOf("TEMPLATE:")<0&&it.raw.indexOf("📌 วิธีใช้")!==0)out.push(it.raw);
+    });
+    return out.join("\n").replace(/\n{3,}/g,"\n\n").trim();
+  }
+  function refresh(){
+    pre.textContent=compose(true);
+    var d={},any=false;
+    fields.forEach(function(it){var v=it.el.value;if(v.trim()||it.def){d[it.id]=v;any=true}});
+    if(any)store.set("tpl-draft-"+n,JSON.stringify(d));else store.del("tpl-draft-"+n);
+  }
+  listeners.push(refresh);
+
+  var lab=$(".in-label",block);if(lab)lab.textContent="✏️ กรอกข้อมูลของคุณ";
+  var old=$(".copy-btn",block);if(old)old.remove();
+  var warn=mk("div","warn");
+  var tb=mk("div","toolbar");
+  var main=mk("button","btn-main","📋 คัดลอก Prompt");main.type="button";
+  var blank=mk("button","btn-sub","คัดลอกเทมเพลตเปล่า");blank.type="button";
+  var clr=mk("button","btn-sub","🗑️ ล้างฟอร์ม");clr.type="button";
+  tb.appendChild(main);tb.appendChild(blank);tb.appendChild(clr);
+  var prev=mk("details","prev","<summary>👁️ ดู Prompt ที่จะคัดลอก (อัปเดตสด)</summary>");
+  block.appendChild(form);block.appendChild(tb);block.appendChild(warn);block.appendChild(prev);prev.appendChild(pre);
+
+  function doCopy(){copyText(compose(false),function(){flash(main,"✅ คัดลอกแล้ว!","📋 คัดลอก Prompt")})}
+  main.addEventListener("click",function(){
+    var empty=fields.filter(function(it){return !it.el.value.trim()});
+    fields.forEach(function(it){it.box.classList.remove("need")});
+    if(!empty.length){warn.classList.remove("show");doCopy();return}
+    empty.forEach(function(it){it.box.classList.add("need")});
+    var names=empty.slice(0,4).map(function(it){return it.label}).join(" • ");
+    if(empty.length>4)names+=" และอีก "+(empty.length-4)+" ช่อง";
+    warn.innerHTML="";
+    var msg=mk("div",null,"");
+    msg.textContent=(empty.length===fields.length?"⚠️ ยังไม่ได้กรอกเลยสักช่อง: ":"⚠️ ยังไม่ได้กรอก "+empty.length+" จาก "+fields.length+" ช่อง: ")+names+" — ช่องที่เว้นว่างจะถูกตัดออกจาก Prompt";
+    var row=mk("div","row");
+    var go=mk("button","btn-main","คัดลอกเลย");go.type="button";
+    var back=mk("button","btn-sub","กลับไปกรอก");back.type="button";
+    go.addEventListener("click",function(){warn.classList.remove("show");doCopy()});
+    back.addEventListener("click",function(){warn.classList.remove("show");empty[0].el.focus()});
+    row.appendChild(go);row.appendChild(back);warn.appendChild(msg);warn.appendChild(row);
+    warn.classList.add("show");
+  });
+  blank.addEventListener("click",function(){copyText(orig,function(){flash(blank,"✅ คัดลอกแล้ว!","คัดลอกเทมเพลตเปล่า")})});
+  clr.addEventListener("click",function(){
+    fields.forEach(function(it){it.el.value=it.def||"";it.box.classList.remove("need")});
+    warn.classList.remove("show");refresh();
+  });
+  refresh();
+});
+})();
+</script>
+
+
+<script>
+/* ===== V3: เนื้อหาเรียน Copilot (ข้อมูลแยกตามระดับ) + แท็บ + โหมดบรรยาย =====
+   เพิ่มระดับใหม่: ใส่ modules ใน Advanced / Architect ด้านล่าง (ตัวเดียวกับ Basic: {t:"ชื่อโมดูล",slides:[{t:"ชื่อแผ่น",h:"HTML"}]})
+   - ใส่ <pre class="pr"> สำหรับ Prompt จะมีปุ่มคัดลอกให้เอง
+   - ใส่ <div class="tn"><b>หมายเหตุผู้สอน:</b> ...</div> สำหรับโน้ตที่ไม่แสดงในโหมดบรรยาย */
+var LEVELS=[
+{id:"basic",name:"Basic",modules:[
+{t:"1 · เปิดคลาสและภาพรวม",slides:[
+{t:"Microsoft 365 Copilot Chat สำหรับพนักงานสำนักงาน",h:`<p><b>แบบไม่ใช้ Microsoft 365 Copilot Add-on</b></p><ul><li>เขียน Prompt และใช้เครื่องมือพื้นฐาน</li><li>อัปโหลดและวิเคราะห์ไฟล์</li><li>เลือกโมเดล (Model Selector)</li><li>Copilot Pages และ Project Workspace</li><li>Agent เบื้องต้นและการตรวจความถูกต้อง</li></ul><div class="goal">เป้าหมาย: เริ่มงานได้เร็วขึ้น พร้อมตรวจสอบความถูกต้องก่อนนำไปใช้</div>`},
+{t:"เช็คป้ายชื่อก่อนเริ่ม (License label)",h:`<p>เข้า copilot.cloud.microsoft แล้วดูป้ายใต้ชื่อตัวเอง:</p><table><tr><th>ป้าย</th><th>หมายความว่า</th></tr><tr><td>Copilot Chat (Basic)</td><td>ไม่มี add-on เรียก Copilot ใน Word / Excel / PowerPoint / OneNote ไม่ได้ ใช้ผ่านแอป Copilot (แชต) และใน Outlook</td></tr><tr><td>M365 Copilot (Basic)</td><td>ไม่มี add-on แต่มี standard access ใน Copilot ในแอป</td></tr><tr><td>M365 Copilot (Premium)</td><td>มี add-on ครบ และมี priority access</td></tr></table><div class="goal">คลาสนี้ใช้ได้กับทุกป้าย เน้นสิ่งที่ทำได้ผ่านแอป Copilot Chat</div><div class="tn"><b>หมายเหตุผู้สอน:</b> Microsoft ประกาศปิด Copilot ในแอป Office สำหรับผู้ไม่มีไลเซนส์ตั้งแต่ 15 เม.ย. 2026 (บางแหล่งว่าเลื่อนเป็น 16 พ.ค.) ผู้ดูแลระบบยังปิดหรือซ่อนฟีเจอร์ได้ ให้ทดสอบกับบัญชีจริงของผู้เรียน</div>`},
+{t:"เครื่องมือพื้นฐานใน Copilot Chat",h:`<ul><li><b>Copilot Chat:</b> ถาม ระดมความคิด ร่าง และสรุปข้อความ</li><li><b>Web Search:</b> ค้นและสรุปข้อมูลจากเว็บ</li><li><b>File and Image Upload:</b> อัปโหลด Word, Excel, PDF หรือรูปเพื่อวิเคราะห์</li><li><b>Image Generation:</b> สร้างภาพจากคำบรรยาย</li><li><b>Copilot Pages:</b> เปลี่ยนคำตอบเป็นพื้นที่ทำงานที่แก้และแชร์ได้</li><li><b>Agents:</b> เรียกใช้ผู้ช่วยเฉพาะงานตามสิทธิ์ที่องค์กรกำหนด</li></ul><div class="goal">ทุกเครื่องมืออยู่ภายใต้ความปลอดภัยระดับองค์กร (Enterprise data protection)</div>`},
+{t:"แบบไม่มี Add-on ต่างอย่างไร",h:`<table><tr><th>ไม่มี Add-on</th><th>มี Add-on</th></tr><tr><td>Chat และ Web Search ได้</td><td>Chat และ Web Search ได้</td></tr><tr><td>วิเคราะห์ไฟล์ที่ผู้ใช้อัปโหลดเอง</td><td>วิเคราะห์ไฟล์ที่อัปโหลดได้</td></tr><tr><td>ใช้ Pages ตามสิทธิ์ที่องค์กรเปิด</td><td>ใช้ Pages ได้เต็มรูปแบบ</td></tr><tr><td>ไม่ค้นอีเมล แชต ประชุมทั้งองค์กรโดยอัตโนมัติ (ยกเว้นใน Outlook)</td><td>เชื่อมอีเมล แชต ประชุม ไฟล์ผ่าน Work IQ</td></tr><tr><td>Standard access ช่วงคนใช้เยอะอาจช้า</td><td>Priority access</td></tr></table><div class="goal">หลักคิด: นำข้อมูลที่ต้องการมาให้ Copilot (Upload / Provide) แทนการให้ค้นทั้งองค์กรเอง</div><div class="tn"><b>หมายเหตุผู้สอน:</b> Word / Excel / PowerPoint Agents ประกาศช่วง มี.ค. 2026 ว่ายังเหลือสำหรับผู้ไม่มีไลเซนส์ แต่เอกสาร Microsoft ล่าสุดระบุว่าต้องมีไลเซนส์เสียเงิน ให้เช็คก่อนสอนเรื่องนี้</div>`},
+{t:"การเลือกโมเดล (Model Selector)",h:`<ul><li><b>Auto (ค่าเริ่มต้น):</b> ระบบเลือกโมเดลให้เองสำหรับงานทั่วไป</li><li><b>Quick response:</b> งานด่วน คำถามง่าย ตอบเร็วกระชับ</li><li><b>Think deeper:</b> งานวิเคราะห์ซับซ้อน ใช้เวลาวางแผนและตรวจงานก่อนตอบ</li><li><b>ข้อจำกัดจาก Admin:</b> ตัวเลือกโมเดลที่เห็นขึ้นกับที่ IT เปิดไว้</li></ul><div class="goal">เริ่มที่ Auto แล้วเปลี่ยนเป็น Think deeper เมื่อโจทย์ซับซ้อน</div>`},
+{t:"งาน Office ที่เหมาะกับ Copilot",h:`<table><tr><th>ประเภทงาน</th><th>ตัวอย่าง</th></tr><tr><td>Communication</td><td>ร่างอีเมล ประกาศ ข้อความ Teams</td></tr><tr><td>Summarization</td><td>สรุปเอกสารและบันทึกประชุม</td></tr><tr><td>Planning</td><td>แผนงาน Timeline Checklist</td></tr><tr><td>Analysis</td><td>เปรียบเทียบข้อมูล หาแนวโน้มเบื้องต้น</td></tr><tr><td>Transformation</td><td>เปลี่ยนข้อความเป็นตาราง FAQ รายงาน</td></tr><tr><td>Brainstorming</td><td>หัวข้อ ชื่อกิจกรรม แนวทางแก้ปัญหา</td></tr></table><div class="goal">งานที่เหมาะ: เป้าหมายชัด มีข้อมูลต้นทาง และมนุษย์ตรวจสอบได้</div>`},
+{t:"ใช้ Copilot อย่างปลอดภัยและมีจรรยาบรรณ",h:`<p><b>ก่อนส่งข้อมูลให้ Copilot ถาม 3 ข้อ</b></p><ol><li>จำเป็นไหม: ต้องใช้ทั้งหมดหรือแค่บางส่วน</li><li>ได้รับอนุญาตไหม: นโยบายองค์กรให้นำเข้าได้หรือไม่</li><li>ตรวจสอบได้ไหม: มีต้นฉบับยืนยันคำตอบหรือไม่</li></ol><p><b>ไม่ควรป้อน</b></p><ul><li>รหัสผ่าน OTP และข้อมูลระบุตัวตน</li><li>ข้อมูลการเงินและสุขภาพที่ละเอียดอ่อน</li><li>ความลับทางการค้าและข้อมูลลูกค้าที่ไม่มีสิทธิ์เปิดเผย</li></ul><div class="goal">Minimize (ใช้น้อยที่สุด) → Anonymize (ปกปิดข้อมูลลับ) → Verify (ตรวจซ้ำ)</div>`}
+]},
+{t:"2 · Prompt แบบ GCCO",slides:[
+{t:"สูตร Prompt แบบ GCCO",h:`<ul><li><b>G</b>oal: ต้องการให้ Copilot ทำอะไร</li><li><b>C</b>ontext: ข้อมูล สถานการณ์ ผู้รับสาร</li><li><b>C</b>onstraint: ภาษา โทน ความยาว ข้อห้าม (เช่น ห้ามแต่งข้อมูล)</li><li><b>O</b>utput: รูปแบบผลลัพธ์ที่ต้องการ</li></ul><pre class="pr">Goal: [สิ่งที่ต้องการให้ทำ]
+Context: [ข้อมูล สถานการณ์ ผู้รับสาร]
+Constraint: [ภาษา โทน ความยาว ข้อห้าม]
+Output: [รูปแบบผลลัพธ์]</pre><p>ถ้าอยากกำหนดบทบาท ให้เขียนไว้ใน Goal หรือ Context (เช่น "ในฐานะผู้ประสานงานโครงการ")</p>`},
+{t:"Workshop: ข้อมูลเดียว ผลงานสามแบบ",h:`<p>ใช้ GCCO ชุดเดียว เปลี่ยนเฉพาะ <b>Output</b> สามรอบ:</p><ol><li>อีเมลแจ้งประชุมทางการ</li><li>ข้อความประกาศสั้นใน Teams</li><li>Checklist สำหรับผู้จัดประชุม</li></ol><p><b>เกณฑ์ตรวจ</b></p><ul><li>ข้อมูลสำคัญครบ (วัน เวลา ช่องทาง)</li><li>รูปแบบเหมาะกับช่องทาง</li><li>ไม่มีข้อมูลที่ AI แต่งเอง</li><li>ระบุสิ่งที่ผู้รับต้องทำชัดเจน</li></ul>`}
+]},
+{t:"3 · ไฟล์และการตรวจความถูกต้อง",slides:[
+{t:"การเพิ่มไฟล์ให้ Copilot",h:`<ol><li>เปิด Microsoft 365 Copilot Chat</li><li>กดปุ่มเพิ่มเนื้อหาหรือแนบไฟล์ (Word, Excel, PDF, รูป)</li><li>ตรวจชื่อไฟล์ก่อนส่ง</li><li>เขียน Prompt ระบุสิ่งที่ต้องการ (สรุป ดึงตาราง หา Action Items)</li><li>ตรวจผลเทียบกับต้นฉบับ</li></ol><div class="goal">อย่าอัปโหลดโดยไม่ระบุคำสั่ง และเลี่ยงข้อมูลลับขั้นสูง</div>`},
+{t:"Prompt สรุปเอกสารและสร้าง Action Tracker",h:`<pre class="pr">Goal: อ่านไฟล์ที่แนบและสรุปสำหรับผู้บริหาร
+Context: ไฟล์นี้คือ [ประเภทเอกสาร] ผู้อ่านยังไม่ได้อ่านต้นฉบับ
+Constraint: ใช้เฉพาะข้อมูลในไฟล์ ห้ามคาดเดา ถ้าไม่พบให้ตอบ "ไม่พบข้อมูลในเอกสาร" ประเด็นสำคัญไม่เกิน 5 ข้อ
+Output: วัตถุประสงค์ / ประเด็นสำคัญ / ข้อสรุป / Action Items เป็นตาราง งาน | ผู้รับผิดชอบ | กำหนดส่ง | สถานะ</pre>`},
+{t:"AI ตอบแล้ว ต้องตรวจอะไรบ้าง",h:`<ul><li><b>Names:</b> ชื่อบุคคลและหน่วยงานสะกดถูกไหม</li><li><b>Numbers:</b> ตัวเลข ยอดรวม สัดส่วนตรงต้นฉบับไหม</li><li><b>Dates:</b> วัน เวลา กำหนดส่งตรงกันไหม</li><li><b>Meaning:</b> ความหมายหลักเปลี่ยนไปไหม</li><li><b>Invented Content:</b> มีข้อมูลที่ถูกแต่งเพิ่มไหม</li></ul><p><b>Prompt ทวนสอบ</b></p><pre class="pr">Goal: ตรวจคำตอบก่อนหน้ากับไฟล์ต้นฉบับอีกครั้ง
+Context: คำตอบนี้จะถูกนำไปใช้งานต่อ
+Constraint: อ้างอิงเฉพาะไฟล์ต้นฉบับ ห้ามเดา
+Output: แยก 3 กลุ่ม: ยืนยันได้ / ยังไม่ชัดเจน / มนุษย์ต้องตรวจ</pre>`}
+]},
+{t:"4 · Copilot Pages",slides:[
+{t:"Copilot Pages คืออะไร",h:`<p>พื้นที่นำคำตอบจาก AI มาพัฒนาต่อยอดร่วมกัน</p><ul><li><b>Persistent:</b> เก็บเนื้อหาไว้ใช้ต่อ ไม่หายไปกับหน้าแชต</li><li><b>Editable:</b> แก้ไขและจัดหน้าได้</li><li><b>Collaborative:</b> แชร์ให้ทีมแก้ร่วมกันตามสิทธิ์</li><li><b>Reusable:</b> ต่อยอดเป็นรายงานหรือเอกสารทางการ</li></ul><div class="tn"><b>หมายเหตุผู้สอน:</b> องค์กรอาจเปิดหรือปิดการสร้าง Pages ผ่านนโยบาย Admin และบัญชีต้องมี SharePoint หรือ OneDrive</div>`},
+{t:"Workflow การใช้ Copilot Pages",h:`<p><b>Generate → Create Page → Edit → Verify → Share → Reuse</b></p><ol><li>สนทนาและสร้างคำตอบใน Copilot Chat</li><li>เลือกสร้าง Page จากคำตอบนั้น</li><li>ตั้งชื่อ Page และจัดหัวข้อ</li><li>ตรวจกับข้อมูลต้นฉบับ</li><li>แชร์ลิงก์เฉพาะผู้เกี่ยวข้อง พร้อมกำหนดสิทธิ์</li><li>คัดลอกหรือส่งออกไปใช้ใน Word ตามเหมาะสม</li></ol>`},
+{t:"Workshop: Meeting Action Page",h:`<p>นำผลจากบันทึกประชุมมาสร้างเป็น Copilot Page:</p><ul><li>หัวข้อ Executive Summary</li><li>สรุปมติและประเด็นสำคัญ</li><li>ตาราง Action Items (งาน, ผู้รับผิดชอบ, กำหนดส่ง)</li><li>แยกหัวข้อ "ประเด็นที่รอการยืนยัน"</li><li>ตรวจร่วมกับคู่หูในชั้น (Pair Review) ก่อนกดแชร์</li></ul>`}
+]},
+{t:"5 · Project Workspace",slides:[
+{t:"Project Workspace = Chat + Files + Pages",h:`<ul><li><b>Chat:</b> พูดคุย ระดมไอเดีย ร่างโครงแผนงาน</li><li><b>Files:</b> อัปโหลด Brief หรือเอกสารข้อกำหนดเป็นฐานข้อมูล</li><li><b>Pages:</b> รวม Timeline, Action Tracker, Risk Register ไว้หน้าเดียว</li></ul><pre class="pr">Goal: สร้างแผนจัดอบรมพร้อม Timeline รายสัปดาห์
+Context: โครงการ [ชื่อ] ผู้เข้าอบรม [กลุ่ม/จำนวน] ภายใน [ช่วงเวลา]
+Constraint: ใช้เฉพาะข้อมูลใน Brief ที่แนบ สิ่งที่ไม่ทราบให้ระบุว่า "รอยืนยัน"
+Output: Timeline รายสัปดาห์ / ตารางผู้รับผิดชอบ / Risk Register พร้อมวางใน Page</pre><div class="tn"><b>หมายเหตุผู้สอน:</b> Microsoft มี Copilot Notebooks ที่รวมแชต ไฟล์ และ Pages ไว้ที่เดียว มีรายงานว่าเปิดให้ผู้ใช้ระดับ Basic แล้ว แต่ยังยืนยันจากเอกสารทางการไม่ได้ ให้เช็คในบัญชีจริงแล้วอ้างชื่อเครื่องมือให้ตรงกับที่ผู้เรียนเห็น</div>`}
+]},
+{t:"6 · Agent เบื้องต้น",slides:[
+{t:"Agent คืออะไรและต่างจาก Chat อย่างไร",h:`<p>Agent คือผู้ช่วย AI ที่ถูกกำหนดกติกา บทบาท และแหล่งความรู้ไว้ล่วงหน้า</p><table><tr><th>Chat ทั่วไป</th><th>Agent</th></tr><tr><td>ป้อนบริบทใหม่ทุกครั้ง</td><td>มี Instructions ตั้งต้นตายตัว</td></tr><tr><td>รูปแบบผลลัพธ์เปลี่ยนตาม Prompt</td><td>คุมรูปแบบและมาตรฐานได้สม่ำเสมอ</td></tr><tr><td>เริ่มจากคำถามอิสระ</td><td>มี Suggested Prompts แนะนำ</td></tr></table><div class="goal">เหมาะกับงานสำนักงานที่ทำซ้ำด้วยมาตรฐานเดียวกัน</div><div class="tn"><b>หมายเหตุผู้สอน:</b> ผู้ไม่มี add-on เข้าถึง agent ได้จำกัด (ไม่มี Researcher / Analyst) และ Copilot Studio เป็นแบบจ่ายตามการใช้ ยังยืนยันไม่ได้ว่าผู้ใช้ทั่วไปสร้าง Agent เองได้ในองค์กรของคุณ ให้ทดสอบก่อนสอนส่วนสร้าง Agent</div>`},
+{t:"โครงสร้าง Agent (Agent Canvas)",h:`<ol><li><b>Name:</b> ชื่อผู้ช่วย (เช่น Office Communication Assistant)</li><li><b>Purpose:</b> ปัญหาหลักที่แก้</li><li><b>Instructions:</b> เขียนด้วยโครง GCCO</li><li><b>Knowledge:</b> เอกสารอ้างอิงที่อนุญาต</li><li><b>Suggested Prompts:</b> คำถามเริ่มต้น</li><li><b>Test Cases:</b> ชุดทดสอบก่อนใช้งานจริง</li></ol><p><b>ตัวอย่าง Instructions (GCCO)</b></p><pre class="pr">Goal: ช่วยร่างอีเมลและประกาศภายในองค์กร
+Context: ผู้ใช้เป็นพนักงานสำนักงาน ผู้รับคือเพื่อนร่วมงานหรือหัวหน้า
+Constraint: ภาษาไทยทางการสุภาพ ห้ามแต่งข้อมูล ถ้าข้อมูลไม่ครบให้ถามกลับก่อน
+Output: หัวเรื่อง + เนื้อหาไม่เกิน 150 คำ + สิ่งที่ผู้รับต้องทำ</pre><div class="goal">Agent คือ GCCO ที่เขียนไว้ล่วงหน้า</div>`}
+]},
+{t:"7 · ภารกิจสรุป",slides:[
+{t:"Final Challenge และ 5 สิ่งที่ต้องจำ",h:`<ol><li>อัปโหลดเอกสารจำลอง</li><li>เขียน Prompt แบบ GCCO ควบคุมบทบาทและบริบท</li><li>สรุปประเด็นและสร้างตาราง Action Items</li><li>ตรวจความถูกต้องกับต้นฉบับ</li><li>สร้างและจัดรูปแบบลงใน Copilot Page</li></ol><p><b>5 สิ่งที่ต้องจำ</b></p><ul><li><b>Prompt:</b> GCCO ให้ครบ</li><li><b>Files:</b> แนบเฉพาะที่จำเป็นและปลอดภัย</li><li><b>Verify:</b> ตรวจตัวเลข ชื่อ วันที่เสมอ</li><li><b>Pages:</b> เปลี่ยนบทสนทนาเป็นชิ้นงานที่แชร์ได้</li><li><b>Agents:</b> ใช้กับงานซ้ำที่มีรูปแบบแน่นอน</li></ul>`}
+]}
+]},
+{id:"adv",name:"Advanced",soon:1,modules:[]},
+{id:"arc",name:"Architect",soon:1,modules:[]}
+];
+
+(function(){
+var $=function(s,r){return (r||document).querySelector(s)};
+function mk(t,c,h){var e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e}
+function copy(text,done){
+  function fb(){var ta=mk("textarea");ta.value=text;ta.setAttribute("readonly","");ta.style.cssText="position:fixed;opacity:0;top:0";document.body.appendChild(ta);ta.focus();ta.select();try{ta.setSelectionRange(0,99999)}catch(e){}try{document.execCommand("copy")}catch(e){}document.body.removeChild(ta);done()}
+  if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(text).then(done).catch(fb);else fb();
+}
+/* ---- แท็บ ---- */
+var secL=$("#sec-learn"),secT=$("#sec-tpl");
+["search","expandAll","collapseAll"].forEach(function(id){var e=document.getElementById(id);if(e)e.setAttribute("data-tplonly","")});
+function tab(n){
+  var l=n==="learn";
+  secL.classList.toggle("hidden",!l);secT.classList.toggle("hidden",l);
+  document.querySelectorAll("[data-tab]").forEach(function(b){b.classList.toggle("on",b.getAttribute("data-tab")===n)});
+  document.querySelectorAll("[data-tplonly]").forEach(function(e){e.classList.toggle("hidden",l)});
+  try{localStorage.setItem("cl-tab",n)}catch(e){}
+}
+document.querySelectorAll("[data-tab]").forEach(function(b){b.addEventListener("click",function(){tab(b.getAttribute("data-tab"));window.scrollTo(0,0)})});
+var saved=null;try{saved=localStorage.getItem("cl-tab")}catch(e){}
+tab(location.hash.indexOf("#tpl")===0?"tpl":(saved==="tpl"?"tpl":"learn"));
+
+/* ---- เนื้อหาเรียน ---- */
+var cur=[],lvId="basic";
+function addCopy(pre){
+  var b=mk("button","btn-sub cp","📋 คัดลอก Prompt");b.type="button";
+  b.addEventListener("click",function(){copy(pre.textContent,function(){b.textContent="✅ คัดลอกแล้ว!";setTimeout(function(){b.textContent="📋 คัดลอก Prompt"},1800)})});
+  pre.insertAdjacentElement("afterend",b);
+}
+function pills(){
+  var box=$("#lvPills");box.innerHTML="";
+  LEVELS.forEach(function(l){
+    var b=mk("button","pill"+(l.id===lvId?" on":""),l.name+(l.soon?"<small>เร็ว ๆ นี้</small>":""));b.type="button";
+    b.addEventListener("click",function(){lvId=l.id;pills();render()});box.appendChild(b);
+  });
+}
+function render(){
+  var lv=LEVELS.filter(function(x){return x.id===lvId})[0],box=$("#lvBody");
+  box.innerHTML="";cur=[];
+  if(!lv.modules.length){box.innerHTML='<div class="soon">🚧 ระดับ '+lv.name+' — เนื้อหาจะเพิ่มในอนาคต</div>';return}
+  var n=0;
+  lv.modules.forEach(function(m){
+    box.appendChild(mk("h3","mod",m.t));
+    m.slides.forEach(function(s){
+      n++;
+      var d=mk("details","sl");
+      d.innerHTML='<summary><span class="num">'+(n<10?"0":"")+n+'</span><span class="sl-t">'+s.t+'</span><span class="chev">▾</span></summary><div class="sl-body">'+s.h+'</div>';
+      box.appendChild(d);cur.push({t:s.t,d:d});
+      d.querySelectorAll("pre.pr").forEach(addCopy);
+    });
+  });
+}
+$("#slAll").addEventListener("click",function(){cur.forEach(function(s){s.d.open=true})});
+$("#slNone").addEventListener("click",function(){cur.forEach(function(s){s.d.open=false})});
+pills();render();
+
+/* ---- โหมดบรรยาย ---- */
+var pm=mk("div","pm hidden");
+pm.innerHTML='<div class="pm-top"><div class="pm-t" id="pmT"></div><span id="pmN"></span><button class="btn-sub" id="pmX" type="button">✕ ปิด</button></div><div class="pm-b" id="pmB"></div><div class="pm-bot"><button class="btn-sub" id="pmP" type="button">← ก่อนหน้า</button><button class="btn-main" id="pmNx" type="button">ถัดไป →</button></div>';
+document.body.appendChild(pm);
+var pi=0;
+function show(i){
+  pi=Math.max(0,Math.min(cur.length-1,i));var s=cur[pi];
+  $("#pmT").textContent=s.t;$("#pmN").textContent=(pi+1)+" / "+cur.length;
+  var b=s.d.querySelector(".sl-body").cloneNode(true);
+  b.querySelectorAll(".tn,.cp").forEach(function(x){x.remove()});
+  var c=$("#pmB");c.innerHTML="";c.appendChild(b);c.scrollTop=0;
+}
+function openPm(i){
+  if(!cur.length)return;
+  pm.classList.remove("hidden");document.body.style.overflow="hidden";show(i);
+  try{if(pm.requestFullscreen)pm.requestFullscreen().catch(function(){})}catch(e){}
+}
+function closePm(){
+  pm.classList.add("hidden");document.body.style.overflow="";
+  try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}
+}
+$("#pmStart").addEventListener("click",function(){openPm(0)});
+$("#pmX").addEventListener("click",closePm);
+$("#pmP").addEventListener("click",function(){show(pi-1)});
+$("#pmNx").addEventListener("click",function(){show(pi+1)});
+document.addEventListener("keydown",function(e){
+  if(pm.classList.contains("hidden"))return;
+  if(e.key==="ArrowRight"||e.key===" "||e.key==="PageDown"){e.preventDefault();show(pi+1)}
+  else if(e.key==="ArrowLeft"||e.key==="PageUp"){e.preventDefault();show(pi-1)}
+  else if(e.key==="Escape")closePm();
+});
+document.addEventListener("fullscreenchange",function(){if(!document.fullscreenElement&&!pm.classList.contains("hidden"))closePm()});
+})();
+</script>
+
+</body>
+</html>
